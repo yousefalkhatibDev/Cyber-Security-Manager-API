@@ -15,18 +15,20 @@ app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(
-  session({
-    secret: "IKnowTheSecret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      expires: 60 * 60 * 24,
-      secure: false,
-    },
-  })
-);
+// app.use(
+//   session({
+//     secret: "IKnowTheSecret",
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       expires: 60 * 60 * 24,
+//       secure: false,
+//     },
+//   })
+// );
 
 const router = require("./routers/routes");
 app.use("/", router);

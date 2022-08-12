@@ -6,7 +6,7 @@ module.exports = {
     try {
       const { p_id } = req.body;
 
-      const sqlQuery = "SELECT * FROM comments WHERE c_post=?";
+      const sqlQuery = "SELECT * FROM comments WHERE c_post=? ORDER BY c_id DESC";
       await pool.query(sqlQuery, [p_id], (err, results) => {
         if (err) console.log(err);
         if (results) {
@@ -24,7 +24,7 @@ module.exports = {
 
       let c_id = CommonFunctions.Generate_Id();
       const date = new Date();
-      const user = "ahmad";
+      const user = "c694568f-d";
 
       const sqlQuery = "INSERT INTO comments VALUES (?,?,?,?,?,?)";
       await pool.query(
@@ -57,4 +57,20 @@ module.exports = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  remove_comments_by_post_internal: async (post_id) => {
+    try {
+      const sqlQuery = "DELETE FROM comments WHERE c_post=?";
+      await pool.query(sqlQuery, [post_id], (err, results) => {
+        if (err) console.log(err);
+        if (results) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 };

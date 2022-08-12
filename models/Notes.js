@@ -6,7 +6,7 @@ module.exports = {
     try {
       const { t_id } = req.body;
 
-      const sqlQuery = "SELECT * FROM notes WHERE n_target=?";
+      const sqlQuery = "SELECT * FROM notes INNER JOIN users ON notes.n_user=users.u_id WHERE notes.n_target=? ORDER BY notes.n_id DESC";
       await pool.query(sqlQuery, [t_id], (err, results) => {
         if (err) console.log(err);
         if (results) {
@@ -24,7 +24,7 @@ module.exports = {
 
       let n_id = CommonFunctions.Generate_Id();
       const date = new Date();
-      const user = "ahmad";
+      const user = "c694568f-d";
 
       const sqlQuery = "INSERT INTO notes VALUES (?,?,?,?,?,?,?,?,?)";
       await pool.query(
@@ -56,7 +56,7 @@ module.exports = {
     try {
       const { n_id } = req.body;
 
-      const sqlQuery = "DELETE FROM targets WHERE n_id=?";
+      const sqlQuery = "DELETE FROM notes WHERE n_id=?";
       await pool.query(sqlQuery, [n_id], (err, results) => {
         if (err) console.log(err);
         if (results) {
@@ -67,4 +67,20 @@ module.exports = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  remove_notes_by_target_internal: async (t_id) => {
+    try {
+      const sqlQuery = "DELETE FROM notes WHERE n_target=?";
+      await pool.query(sqlQuery, [t_id], (err, results) => {
+        if (err) console.log(err);
+        if (results) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 };

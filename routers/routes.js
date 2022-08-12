@@ -40,6 +40,10 @@ router.delete("/remove_operation", (req, res) => {
 
 // ------- Users -------
 
+router.post("/login", (req, res) => {
+  Users.login(req, res);
+});
+
 router.post("/add_user", (req, res) => {
   Users.add_user(req, res);
 });
