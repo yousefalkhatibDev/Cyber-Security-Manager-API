@@ -3,11 +3,12 @@ const CommonFunctions = require("../helper/CommonFunctions");
 const Comments = require("./Comments");
 
 module.exports = {
-  get_posts: async (req, res) => {
+  GetPosts: async (req, res) => {
     try {
       const { o_id } = req.body;
 
-      const sqlQuery = "SELECT *, users.u_name FROM posts INNER JOIN users ON posts.p_user=users.u_id WHERE posts.p_operation=? ORDER BY posts.p_id DESC";
+      const sqlQuery =
+        "SELECT *, users.u_name FROM posts INNER JOIN users ON posts.p_user=users.u_id WHERE posts.p_operation=? ORDER BY posts.p_id DESC";
       pool.query(sqlQuery, [o_id], (err, results) => {
         if (err) console.log(err);
         if (results) {
@@ -22,7 +23,7 @@ module.exports = {
     }
   },
 
-  add_post: async (req, res) => {
+  AddPost: async (req, res) => {
     try {
       let { p_title, p_text, p_image, p_operation } = req.body;
 
@@ -38,7 +39,7 @@ module.exports = {
         [p_id, user, p_title, p_text, p_image, p_operation, date, date],
         (err, results) => {
           if (err) console.log(err);
-          if (results) {
+          if (results.affectedRows) {
             res.status(200).json({ data: true });
           }
         }
@@ -48,15 +49,15 @@ module.exports = {
     }
   },
 
-  remove_post: async (req, res) => {
+  RemovePost: async (req, res) => {
     try {
       const { p_id } = req.body;
 
       const sqlQuery = "DELETE FROM posts WHERE p_id=?";
       await pool.query(sqlQuery, [p_id], (err, results) => {
         if (err) console.log(err);
-        if (results) {
-          let post_comments = Comments.remove_comments_by_post_internal(p_id);
+        if (results.affectedRows) {
+          let post_comments = Comments.Remove_Comments_By_Post_Internal(p_id);
           if (post_comments) {
             res.status(200).json({ data: true });
           } else {
@@ -69,12 +70,12 @@ module.exports = {
     }
   },
 
-  remove_posts_by_operation_internal: async (p_opeartion) => {
+  Remove_Posts_By_Operation_Internal: async (p_opeartion) => {
     try {
       const sqlQuery = "DELETE FROM posts WHERE p_operation=?";
       await pool.query(sqlQuery, [p_opeartion], (err, results) => {
         if (err) console.log(err);
-        if (results) {
+        if (results.affectedRows) {
           return true;
         } else {
           return false;

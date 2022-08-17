@@ -2,11 +2,12 @@ const pool = require("../helper/database").pool;
 const CommonFunctions = require("../helper/CommonFunctions");
 
 module.exports = {
-  get_notes: async (req, res) => {
+  GetNotes: async (req, res) => {
     try {
       const { t_id } = req.body;
 
-      const sqlQuery = "SELECT * FROM notes INNER JOIN users ON notes.n_user=users.u_id WHERE notes.n_target=? ORDER BY notes.n_id DESC";
+      const sqlQuery =
+        "SELECT * FROM notes INNER JOIN users ON notes.n_user=users.u_id WHERE notes.n_target=? ORDER BY notes.n_id DESC";
       await pool.query(sqlQuery, [t_id], (err, results) => {
         if (err) console.log(err);
         if (results) {
@@ -18,7 +19,7 @@ module.exports = {
     }
   },
 
-  add_note: async (req, res) => {
+  AddNote: async (req, res) => {
     try {
       const { n_target, n_operation, n_type, n_title, n_text } = req.body;
 
@@ -42,7 +43,7 @@ module.exports = {
         ],
         (err, results) => {
           if (err) console.log(err);
-          if (results) {
+          if (results.affectedRows) {
             res.status(200).json({ data: true });
           }
         }
@@ -52,14 +53,14 @@ module.exports = {
     }
   },
 
-  remove_note: async (req, res) => {
+  RemoveNote: async (req, res) => {
     try {
       const { n_id } = req.body;
 
       const sqlQuery = "DELETE FROM notes WHERE n_id=?";
       await pool.query(sqlQuery, [n_id], (err, results) => {
         if (err) console.log(err);
-        if (results) {
+        if (results.affectedRows) {
           res.status(200).json({ data: true });
         }
       });
@@ -68,12 +69,12 @@ module.exports = {
     }
   },
 
-  remove_notes_by_target_internal: async (t_id) => {
+  Remove_Notes_By_Target_Internal: async (t_id) => {
     try {
       const sqlQuery = "DELETE FROM notes WHERE n_target=?";
       await pool.query(sqlQuery, [t_id], (err, results) => {
         if (err) console.log(err);
-        if (results) {
+        if (results.affectedRows) {
           return true;
         } else {
           return false;
@@ -82,5 +83,5 @@ module.exports = {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
 };

@@ -2,11 +2,12 @@ const pool = require("../helper/database").pool;
 const CommonFunctions = require("../helper/CommonFunctions");
 
 module.exports = {
-  get_comments: async (req, res) => {
+  GetComments: async (req, res) => {
     try {
       const { p_id } = req.body;
 
-      const sqlQuery = "SELECT * FROM comments WHERE c_post=? ORDER BY c_id DESC";
+      const sqlQuery =
+        "SELECT * FROM comments WHERE c_post=? ORDER BY c_id DESC";
       await pool.query(sqlQuery, [p_id], (err, results) => {
         if (err) console.log(err);
         if (results) {
@@ -18,7 +19,7 @@ module.exports = {
     }
   },
 
-  add_comment: async (req, res) => {
+  AddComment: async (req, res) => {
     try {
       const { c_post, c_text } = req.body;
 
@@ -32,7 +33,7 @@ module.exports = {
         [c_id, user, c_post, c_text, date, date],
         (err, results) => {
           if (err) console.log(err);
-          if (results) {
+          if (results.affectedRows) {
             res.status(200).json({ data: true });
           }
         }
@@ -42,14 +43,14 @@ module.exports = {
     }
   },
 
-  remove_comment: async (req, res) => {
+  RemoveComment: async (req, res) => {
     try {
       const { c_id } = req.body;
 
       const sqlQuery = "DELETE FROM comments WHERE c_id=?";
       await pool.query(sqlQuery, [c_id], (err, results) => {
         if (err) console.log(err);
-        if (results) {
+        if (results.affectedRows) {
           res.status(200).json({ data: true });
         }
       });
@@ -58,12 +59,12 @@ module.exports = {
     }
   },
 
-  remove_comments_by_post_internal: async (post_id) => {
+  Remove_Comments_By_Post_Internal: async (post_id) => {
     try {
       const sqlQuery = "DELETE FROM comments WHERE c_post=?";
       await pool.query(sqlQuery, [post_id], (err, results) => {
         if (err) console.log(err);
-        if (results) {
+        if (results.affectedRows) {
           return true;
         } else {
           return false;
@@ -72,5 +73,5 @@ module.exports = {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
 };
