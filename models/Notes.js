@@ -4,11 +4,11 @@ const CommonFunctions = require("../helper/CommonFunctions");
 module.exports = {
   GetNotes: async (req, res) => {
     try {
-      const { t_id } = req.body;
+      const { TargetID } = req.body;
 
       const sqlQuery =
-        "SELECT * FROM notes INNER JOIN users ON notes.n_user=users.u_id WHERE notes.n_target=? ORDER BY notes.n_id DESC";
-      await pool.query(sqlQuery, [t_id], (err, results) => {
+        "SELECT * FROM notes INNER JOIN users ON notes.n_user=users.u_id WHERE notes.n_target=? ORDER BY notes.n_create_date DESC";
+      await pool.query(sqlQuery, [TargetID], (err, results) => {
         if (err) console.log(err);
         if (results) {
           res.status(200).json({ data: results });
@@ -21,23 +21,29 @@ module.exports = {
 
   AddNote: async (req, res) => {
     try {
-      const { n_target, n_operation, n_type, n_title, n_text } = req.body;
+      const {
+        NoteTarget,
+        NoteOperation,
+        NoteType,
+        NoteTitle,
+        NoteText,
+        NoteUser,
+      } = req.body;
 
-      let n_id = CommonFunctions.Generate_Id();
+      let NoteID = CommonFunctions.Generate_Id();
       const date = new Date();
-      const user = "c694568f-d";
 
       const sqlQuery = "INSERT INTO notes VALUES (?,?,?,?,?,?,?,?,?)";
       await pool.query(
         sqlQuery,
         [
-          n_id,
-          user,
-          n_target,
-          n_operation,
-          n_type,
-          n_title,
-          n_text,
+          NoteID,
+          NoteUser,
+          NoteTarget,
+          NoteOperation,
+          NoteType,
+          NoteTitle,
+          NoteText,
           date,
           date,
         ],

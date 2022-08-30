@@ -9,11 +9,37 @@ let Users = require("../models/Users");
 let Notes = require("../models/Notes");
 let Posts = require("../models/Posts");
 let Comments = require("../models/Comments");
+let Auth = require("../models/Auth");
+let Relations = require("../models/Relations");
+let Tasks = require("../models/Tasks");
+let Members = require("../models/Members");
+
+// ------- Auth -------
+
+router.post("/register", (req, res) => {
+  Auth.Register(req, res);
+});
+
+router.post("/logout", (req, res) => {
+  Auth.Logout(req, res);
+});
+
+router.post("/login", (req, res) => {
+  Auth.Login(req, res);
+});
 
 // ------- Targets -------
 
-router.get("/get_targets", (req, res) => {
+router.post("/get_targets", (req, res) => {
   Targets.GetTargets(req, res);
+});
+
+router.post("/get_target_info", (req, res) => {
+  Targets.GetTargetInfo(req, res);
+});
+
+router.post("/get_targets_by_user", (req, res) => {
+  Targets.GetTargetsByUser(req, res);
 });
 
 router.post("/add_target", (req, res) => {
@@ -42,8 +68,12 @@ router.put("/update_target_location", (req, res) => {
 
 // ------- Operations -------
 
-router.get("/get_operations", (req, res) => {
+router.post("/get_operations", (req, res) => {
   Operations.GetOperations(req, res);
+});
+
+router.post("/get_operation_info", (req, res) => {
+  Operations.GetOperationInfo(req, res);
 });
 
 router.post("/add_operation", (req, res) => {
@@ -68,10 +98,6 @@ router.put("/update_operation_state", (req, res) => {
 
 // ------- Users -------
 
-router.post("/login", (req, res) => {
-  Users.Login(req, res);
-});
-
 router.post("/add_user", (req, res) => {
   Users.AddUser(req, res);
 });
@@ -94,7 +120,7 @@ router.put("/update_user_bio", (req, res) => {
 
 // ------- Notes -------
 
-router.get("/get_notes", (req, res) => {
+router.post("/get_notes", (req, res) => {
   Notes.GetNotes(req, res);
 });
 
@@ -108,7 +134,7 @@ router.delete("/remove_note", (req, res) => {
 
 // ------- Posts -------
 
-router.get("/get_posts", (req, res) => {
+router.post("/get_posts", (req, res) => {
   Posts.GetPosts(req, res);
 });
 
@@ -122,7 +148,7 @@ router.delete("/remove_post", (req, res) => {
 
 // ------- Comments -------
 
-router.get("/get_comments", (req, res) => {
+router.post("/get_comments", (req, res) => {
   Comments.GetComments(req, res);
 });
 
@@ -132,6 +158,40 @@ router.post("/add_comment", (req, res) => {
 
 router.delete("/remove_comment", (req, res) => {
   Comments.RemoveComment(req, res);
+});
+
+// ------- Relations -------
+
+router.post("/get_relations", (req, res) => {
+  Relations.GetRelations(req, res);
+});
+
+router.post("/get_related_by_targets", (req, res) => {
+  Relations.GetRelatedByTargets(req, res);
+});
+
+router.post("/add_relation", (req, res) => {
+  Relations.AddRelation(req, res);
+});
+
+// ------- Tasks -------
+
+router.post("/get_tasks", (req, res) => {
+  Tasks.GetTasks(req, res);
+});
+
+router.post("/add_task", (req, res) => {
+  Tasks.AddTask(req, res);
+});
+
+// ------- Members -------
+
+router.post("/get_members", (req, res) => {
+  Members.GetMembers(req, res);
+});
+
+router.post("/add_member", (req, res) => {
+  Members.AddMember(req, res);
 });
 
 module.exports = router;

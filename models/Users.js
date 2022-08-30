@@ -3,23 +3,6 @@ const CommonFunctions = require("../helper/CommonFunctions");
 const Operations = require("./Operations");
 
 module.exports = {
-  Login: async (req, res) => {
-    try {
-      const { u_email, u_password } = req.body;
-
-      const sqlQuery = "SELECT * FROM users WHERE u_email=? AND u_password=?";
-      await pool.query(sqlQuery, [u_email, u_password], (err, results) => {
-        if (err) console.log(err);
-        if (results) {
-          console.log(results);
-          res.status(200).json({ data: results });
-        }
-      });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  },
-
   AddUser: async (req, res) => {
     try {
       let { u_email, u_name, u_image, u_bio, u_password } = req.body;

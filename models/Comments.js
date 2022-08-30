@@ -4,11 +4,10 @@ const CommonFunctions = require("../helper/CommonFunctions");
 module.exports = {
   GetComments: async (req, res) => {
     try {
-      const { p_id } = req.body;
-
+      const { PostID } = req.body;
       const sqlQuery =
-        "SELECT * FROM comments WHERE c_post=? ORDER BY c_id DESC";
-      await pool.query(sqlQuery, [p_id], (err, results) => {
+      "SELECT *, users.u_name FROM comments INNER JOIN users ON comments.c_user=users.u_id WHERE comments.c_post=? ORDER BY comments.c_create_date DESC";
+      await pool.query(sqlQuery, [PostID], (err, results) => {
         if (err) console.log(err);
         if (results) {
           res.status(200).json({ data: results });

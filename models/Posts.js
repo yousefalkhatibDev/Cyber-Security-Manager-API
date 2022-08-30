@@ -5,11 +5,11 @@ const Comments = require("./Comments");
 module.exports = {
   GetPosts: async (req, res) => {
     try {
-      const { o_id } = req.body;
+      const { OperationID } = req.body;
 
       const sqlQuery =
-        "SELECT *, users.u_name FROM posts INNER JOIN users ON posts.p_user=users.u_id WHERE posts.p_operation=? ORDER BY posts.p_id DESC";
-      pool.query(sqlQuery, [o_id], (err, results) => {
+        "SELECT *, users.u_name FROM posts INNER JOIN users ON posts.p_user=users.u_id WHERE posts.p_operation=? ORDER BY posts.p_create_date DESC";
+      pool.query(sqlQuery, [OperationID], (err, results) => {
         if (err) console.log(err);
         if (results) {
           // results[0]["p_user_name"] = owner[0].u_name
@@ -25,18 +25,17 @@ module.exports = {
 
   AddPost: async (req, res) => {
     try {
-      let { p_title, p_text, p_image, p_operation } = req.body;
+      let {PostUser, PostTitle, PostText, PostImage, PostOperation } = req.body;
 
-      let p_id = CommonFunctions.Generate_Id();
+      let PostID = CommonFunctions.Generate_Id();
       const date = new Date();
-      const user = "c694568f-d";
 
-      p_image = p_image == true ? p_image : "";
+      PostImage = PostImage == true ? PostImage : "";
 
       const sqlQuery = "INSERT INTO posts VALUES (?,?,?,?,?,?,?,?)";
       await pool.query(
         sqlQuery,
-        [p_id, user, p_title, p_text, p_image, p_operation, date, date],
+        [PostID, PostUser, PostTitle, PostText, PostImage, PostOperation, date, date],
         (err, results) => {
           if (err) console.log(err);
           if (results.affectedRows) {

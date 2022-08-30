@@ -2,15 +2,32 @@ const pool = require("../helper/database").pool;
 const CommonFunctions = require("../helper/CommonFunctions");
 const Posts = require("./Posts");
 const Targets = require("./Targets");
+const Members = require("./Members");
 
 module.exports = {
+  GetOperationInfo: async (req, res) => {
+    try {
+      const { OperationID } = req.body;
+
+      const sqlQuery = "SELECT * FROM operations WHERE o_id=?";
+      await pool.query(sqlQuery, [OperationID], (err, results) => {
+        if (err) console.log(err);
+        if (results) {
+          res.status(200).json({ data: results });
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   GetOperations: async (req, res) => {
     try {
-      const { u_id } = req.body;
+      const { UserID } = req.body;
 
       const sqlQuery =
-        "SELECT * FROM operations WHERE o_user=? ORDER BY o_id DESC";
-      await pool.query(sqlQuery, [u_id], (err, results) => {
+        "SELECT * FROM operations WHERE o_user=? ORDER BY o_create_date DESC";
+      await pool.query(sqlQuery, [UserID], (err, results) => {
         if (err) console.log(err);
         if (results) {
           res.status(200).json({ data: results });
@@ -23,32 +40,44 @@ module.exports = {
 
   AddOperation: async (req, res) => {
     try {
-      let { o_name, o_password, o_description, o_image, o_state } = req.body;
+      let {
+        OperationUser,
+        OperationName,
+        OperationPassword,
+        OperationDescription,
+        OperationImage,
+        OperationState,
+      } = req.body;
 
-      let o_id = CommonFunctions.Generate_Id();
+      let OperationID = CommonFunctions.Generate_Id();
       const date = new Date();
-      const user = "c694568f-d";
 
-      o_image = o_image == true ? o_image : "";
+      OperationImage = OperationImage == true ? OperationImage : "";
 
       const sqlQuery = "INSERT INTO operations VALUES (?,?,?,?,?,?,?,?,?)";
       await pool.query(
         sqlQuery,
         [
-          o_id,
-          o_name,
-          user,
-          o_password,
-          o_description,
-          o_image,
-          o_state,
+          OperationID,
+          OperationName,
+          OperationUser,
+          OperationPassword,
+          OperationDescription,
+          OperationImage,
+          OperationState,
           date,
           date,
         ],
         (err, results) => {
-          if (err) console.log(err);
+          if (err) console.error(err);
           if (results.affectedRows) {
-            res.status(200).json({ data: true });
+            let AddTheUserAsMember = Members.Add_Member_Internal(
+              OperationUser,
+              OperationID
+            );
+            if (AddTheUserAsMember) {
+              res.status(200).json({ data: true });
+            }
           }
         }
       );

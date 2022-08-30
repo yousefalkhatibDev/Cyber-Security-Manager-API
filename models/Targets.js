@@ -3,14 +3,49 @@ const CommonFunctions = require("../helper/CommonFunctions");
 const Notes = require("./Notes");
 
 module.exports = {
-  GetTargets: async (req, res) => {
+  GetTargetInfo: async (req, res) => {
     try {
-      const { o_id } = req.body;
+      const { TargetID } = req.body;
 
       const sqlQuery =
-        "SELECT * FROM targets LEFT JOIN users ON targets.t_user=users.u_id WHERE targets.t_operation=? ORDER BY targets.t_id DESC";
+        "SELECT * FROM cts.operations LEFT JOIN cts.members ON members.m_operation=operations.o_id WHERE members.m_agent=? ORDER BY operations.o_create_date DESC";
+      await pool.query(sqlQuery, [TargetID], (err, results) => {
+        if (err) console.log(err);
+        if (results) {
+          res.status(200).json({ data: results });
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 
-      await pool.query(sqlQuery, [o_id], (err, results) => {
+  GetTargets: async (req, res) => {
+    try {
+      const { OperationID } = req.body;
+
+      const sqlQuery =
+        "SELECT * FROM targets LEFT JOIN users ON targets.t_user=users.u_id WHERE targets.t_operation=? ORDER BY targets.t_create_date DESC";
+
+      await pool.query(sqlQuery, [OperationID], (err, results) => {
+        if (err) console.log(err);
+        if (results) {
+          res.status(200).json({ data: results });
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  GetTargetsByUser: async (req, res) => {
+    try {
+      const { UserID } = req.body;
+
+      const sqlQuery =
+        "SELECT * FROM cts.targets LEFT JOIN operations ON targets.t_operation=operations.o_id WHERE targets.t_user=? ORDER BY targets.t_create_date DESC";
+
+      await pool.query(sqlQuery, [UserID], (err, results) => {
         if (err) console.log(err);
         if (results) {
           res.status(200).json({ data: results });
@@ -23,34 +58,43 @@ module.exports = {
 
   AddTarget: async (req, res) => {
     try {
-      let { t_operation, t_name, t_type, t_image, t_description, t_location } =
-        req.body;
+      let {
+        TargetOperation,
+        TargetName,
+        TargetUser,
+        TargetType,
+        TargetImage,
+        TargetDescription,
+        TargetLocation,
+      } = req.body;
 
-      let t_id = CommonFunctions.Generate_Id();
+      let TargetID = CommonFunctions.Generate_Id();
       const date = new Date();
-      const user = "c694568f-d";
 
-      t_image = t_image == true ? t_image : "";
+      TargetImage = TargetImage == true ? TargetImage : "";
 
       const sqlQuery = "INSERT INTO targets VALUES (?,?,?,?,?,?,?,?,?,?)";
       await pool.query(
         sqlQuery,
         [
-          t_id,
-          user,
-          t_operation,
-          t_name,
-          t_type,
-          t_image,
-          t_description,
-          t_location,
+          TargetID,
+          TargetUser,
+          TargetOperation,
+          TargetName,
+          TargetType,
+          TargetImage,
+          TargetDescription,
+          TargetLocation,
           date,
           date,
         ],
         (err, results) => {
           if (err) console.log(err);
           if (results.affectedRows) {
+            console.log(results);
             res.status(200).json({ data: true });
+          } else {
+            res.status(500).json({ error: false });
           }
         }
       );
