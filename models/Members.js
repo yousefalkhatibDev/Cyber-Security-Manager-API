@@ -11,6 +11,7 @@ module.exports = {
       await pool.query(sqlQuery, [OperationID], (err, results) => {
         if (err) console.log(err);
         if (results) {
+          res.header("Access-Control-Allow-Origin", "*");
           res.status(200).json({ data: results });
         }
       });
