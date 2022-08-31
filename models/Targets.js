@@ -7,8 +7,7 @@ module.exports = {
     try {
       const { TargetID } = req.body;
 
-      const sqlQuery =
-        "SELECT * FROM operations LEFT JOIN members ON members.m_operation=operations.o_id WHERE members.m_agent=? ORDER BY operations.o_create_date DESC";
+      const sqlQuery = "SELECT * FROM targets WHERE t_id=?";
       await pool.query(sqlQuery, [TargetID], (err, results) => {
         if (err) console.log(err);
         if (results) {
