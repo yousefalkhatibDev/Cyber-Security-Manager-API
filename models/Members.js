@@ -7,7 +7,7 @@ module.exports = {
       const { OperationID } = req.body;
 
       let sqlQuery =
-        "SELECT * FROM cts.members INNER JOIN users ON users.u_id=members.m_agent WHERE members.m_operation=? ORDER BY members.m_create_date DESC";
+        "SELECT * FROM members INNER JOIN users ON users.u_id=members.m_agent WHERE members.m_operation=? ORDER BY members.m_create_date DESC";
       await pool.query(sqlQuery, [OperationID], (err, results) => {
         if (err) console.log(err);
         if (results) {
