@@ -2,7 +2,7 @@ const express = require("express");
 const dontenv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const session = require("express-session");
+const session = require("cookie-session");
 const cookieParser = require("cookie-parser");
 
 dontenv.config({ path: ".env" });
