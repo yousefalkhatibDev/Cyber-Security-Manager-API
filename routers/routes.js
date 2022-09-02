@@ -98,10 +98,6 @@ router.put("/update_operation_state", (req, res) => {
 
 // ------- Users -------
 
-router.post("/add_user", (req, res) => {
-  Users.AddUser(req, res);
-});
-
 router.delete("/remove_user", (req, res) => {
   Users.RemoveUser(req, res);
 });

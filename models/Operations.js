@@ -3,6 +3,7 @@ const CommonFunctions = require("../helper/CommonFunctions");
 const Posts = require("./Posts");
 const Targets = require("./Targets");
 const Members = require("./Members");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   GetOperationInfo: async (req, res) => {
@@ -23,7 +24,8 @@ module.exports = {
 
   GetOperations: async (req, res) => {
     try {
-      const { UserID } = req.body;
+      const { Token } = req.body;
+      let UserID = jwt.verify(Token, process.env.SECRET).id;
 
       const sqlQuery =
         "SELECT * FROM operations LEFT JOIN members ON members.m_operation=operations.o_id WHERE members.m_agent=? ORDER BY operations.o_create_date DESC";
@@ -41,7 +43,7 @@ module.exports = {
   AddOperation: async (req, res) => {
     try {
       let {
-        OperationUser,
+        Token,
         OperationName,
         OperationPassword,
         OperationDescription,
@@ -50,6 +52,7 @@ module.exports = {
       } = req.body;
 
       let OperationID = CommonFunctions.Generate_Id();
+      let OperationUser = jwt.verify(Token, process.env.SECRET).id;
       const date = new Date();
 
       OperationImage = OperationImage == true ? OperationImage : "";
@@ -89,15 +92,15 @@ module.exports = {
   // remove posts, targets
   RemoveOperation: async (req, res) => {
     try {
-      const { o_id } = req.body;
+      const { OperationID } = req.body;
 
       const sqlQuery = "DELETE FROM operations WHERE o_id=?";
-      await pool.query(sqlQuery, [o_id], (err, results) => {
+      await pool.query(sqlQuery, [OperationID], (err, results) => {
         if (err) console.log(err);
         if (results.affectedRows) {
-          let operation_posts = Posts.Remove_Posts_By_Operation_Internal(o_id);
+          let operation_posts = Posts.Remove_Posts_By_Operation_Internal(OperationID);
           let operation_targets =
-            Targets.Remove_Targets_By_Operation_Internal(o_id);
+            Targets.Remove_Targets_By_Operation_Internal(OperationID);
           if (operation_posts && operation_targets) {
             res.status(200).json({ data: true });
           } else {
@@ -112,10 +115,10 @@ module.exports = {
 
   UpdateDescription: async (req, res) => {
     try {
-      const { id, description } = req.body;
+      const { OperationID, OperationDescription } = req.body;
 
       const sqlQuery = "UPDATE operations SET o_description=? WHERE o_id=?";
-      await pool.query(sqlQuery, [description, id], (err, results) => {
+      await pool.query(sqlQuery, [OperationDescription, OperationID], (err, results) => {
         if (err) console.log(err);
         if (results.affectedRows) {
           res.status(200).json({ data: true });

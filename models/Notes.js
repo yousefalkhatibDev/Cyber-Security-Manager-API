@@ -1,5 +1,6 @@
 const pool = require("../helper/database").pool;
 const CommonFunctions = require("../helper/CommonFunctions");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   GetNotes: async (req, res) => {
@@ -27,10 +28,11 @@ module.exports = {
         NoteType,
         NoteTitle,
         NoteText,
-        NoteUser,
+        Token,
       } = req.body;
 
       let NoteID = CommonFunctions.Generate_Id();
+      let NoteUser = jwt.verify(Token, process.env.SECRET).id;
       const date = new Date();
 
       const sqlQuery = "INSERT INTO notes VALUES (?,?,?,?,?,?,?,?,?)";
@@ -61,10 +63,10 @@ module.exports = {
 
   RemoveNote: async (req, res) => {
     try {
-      const { n_id } = req.body;
+      const { NoteID } = req.body;
 
       const sqlQuery = "DELETE FROM notes WHERE n_id=?";
-      await pool.query(sqlQuery, [n_id], (err, results) => {
+      await pool.query(sqlQuery, [NoteID], (err, results) => {
         if (err) console.log(err);
         if (results.affectedRows) {
           res.status(200).json({ data: true });
@@ -75,7 +77,7 @@ module.exports = {
     }
   },
 
-  Remove_Notes_By_Target_Internal: async (t_id) => {
+  Remove_Notes_By_Target_Internal: async (TargetID) => {
     try {
       const sqlQuery = "DELETE FROM notes WHERE n_target=?";
       await pool.query(sqlQuery, [t_id], (err, results) => {

@@ -1,6 +1,7 @@
 const pool = require("../helper/database").pool;
 const CommonFunctions = require("../helper/CommonFunctions");
 const Comments = require("./Comments");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   GetPosts: async (req, res) => {
@@ -25,9 +26,10 @@ module.exports = {
 
   AddPost: async (req, res) => {
     try {
-      let {PostUser, PostTitle, PostText, PostImage, PostOperation } = req.body;
+      let {Token, PostTitle, PostText, PostImage, PostOperation } = req.body;
 
       let PostID = CommonFunctions.Generate_Id();
+      let PostUser = jwt.verify(Token, process.env.SECRET).id
       const date = new Date();
 
       PostImage = PostImage == true ? PostImage : "";

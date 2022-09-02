@@ -1,5 +1,6 @@
 const pool = require("../helper/database").pool;
 const CommonFunctions = require("../helper/CommonFunctions");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   GetMembers: async (req, res) => {
@@ -21,7 +22,9 @@ module.exports = {
 
   AddMember: async (req, res) => {
     try {
-      let { MemeberAgent, MemeberOperation, MemeberUser } = req.body;
+      let { MemeberAgent, MemeberOperation, Token } = req.body;
+
+      const MemeberUser = jwt.verify(Token, process.env.SECRET)
 
       let MemeberID = CommonFunctions.Generate_Id();
       const date = new Date();

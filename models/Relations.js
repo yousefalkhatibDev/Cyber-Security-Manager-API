@@ -1,5 +1,6 @@
 const pool = require("../helper/database").pool;
 const CommonFunctions = require("../helper/CommonFunctions");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   GetRelations: async (req, res) => {
@@ -40,13 +41,14 @@ module.exports = {
     try {
       const {
         RelationType,
-        RelationUser,
+        Token,
         RelationRelatedTarget,
         RelationDescription,
         RelationTarget,
       } = req.body;
 
       let RelationID = CommonFunctions.Generate_Id();
+      let RelationUser = jwt.verify(Token, process.env.SECRET).id
       const date = new Date();
 
       const sqlQuery = "INSERT INTO relations VALUES (?,?,?,?,?,?,?,?)";

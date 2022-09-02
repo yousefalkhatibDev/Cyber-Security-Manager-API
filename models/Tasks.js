@@ -1,5 +1,6 @@
 const pool = require("../helper/database").pool;
 const CommonFunctions = require("../helper/CommonFunctions");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   GetTasks: async (req, res) => {
@@ -22,7 +23,7 @@ module.exports = {
   AddTask: async (req, res) => {
     try {
       let {
-        TaskUser,
+        Token,
         TaskAgent,
         TaskTitle,
         TaskContent,
@@ -31,6 +32,7 @@ module.exports = {
       } = req.body;
 
       let TaskID = CommonFunctions.Generate_Id();
+      let TaskUser = jwt.verify(Token, process.env.SECRET).id
       const date = new Date();
 
       const sqlQuery = "INSERT INTO tasks VALUES (?,?,?,?,?,?,?,?,?)";

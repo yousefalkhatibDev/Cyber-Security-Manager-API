@@ -1,6 +1,7 @@
 const pool = require("../helper/database").pool;
 const CommonFunctions = require("../helper/CommonFunctions");
 const Notes = require("./Notes");
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   GetTargetInfo: async (req, res) => {
@@ -23,8 +24,7 @@ module.exports = {
     try {
       const { OperationID } = req.body;
 
-      const sqlQuery =
-        "SELECT * FROM targets LEFT JOIN users ON targets.t_user=users.u_id WHERE targets.t_operation=? ORDER BY targets.t_create_date DESC";
+      const sqlQuery = "SELECT * FROM targets LEFT JOIN users ON targets.t_user=users.u_id WHERE targets.t_operation=? ORDER BY targets.t_create_date DESC";
 
       await pool.query(sqlQuery, [OperationID], (err, results) => {
         if (err) console.log(err);
@@ -39,10 +39,10 @@ module.exports = {
 
   GetTargetsByUser: async (req, res) => {
     try {
-      const { UserID } = req.body;
+      const { Token } = req.body;
+      let UserID = jwt.verify(Token, process.env.SECRET).id
 
-      const sqlQuery =
-        "SELECT * FROM targets LEFT JOIN operations ON targets.t_operation=operations.o_id WHERE targets.t_user=? ORDER BY targets.t_create_date DESC";
+      const sqlQuery = "SELECT * FROM targets LEFT JOIN operations ON targets.t_operation=operations.o_id WHERE targets.t_user=? ORDER BY targets.t_create_date DESC";
 
       await pool.query(sqlQuery, [UserID], (err, results) => {
         if (err) console.log(err);
@@ -60,7 +60,7 @@ module.exports = {
       let {
         TargetOperation,
         TargetName,
-        TargetUser,
+        Token,
         TargetType,
         TargetImage,
         TargetDescription,
@@ -68,6 +68,7 @@ module.exports = {
       } = req.body;
 
       let TargetID = CommonFunctions.Generate_Id();
+      let TargetUser = jwt.verify(Token, process.env.SECRET).id;
       const date = new Date();
 
       TargetImage = TargetImage == true ? TargetImage : "";
