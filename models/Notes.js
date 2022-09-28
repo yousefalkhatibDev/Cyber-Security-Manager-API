@@ -5,16 +5,38 @@ const jwt = require("jsonwebtoken");
 module.exports = {
   GetNotes: async (req, res) => {
     try {
-      const { TargetID } = req.body;
+      const { TargetID, SearchNotes } = req.body;
 
-      const sqlQuery =
-        "SELECT * FROM notes INNER JOIN users ON notes.n_user=users.u_id WHERE notes.n_target=? ORDER BY notes.n_create_date DESC";
-      await pool.query(sqlQuery, [TargetID], (err, results) => {
-        if (err) console.log(err);
-        if (results) {
-          res.status(200).json({ data: results });
-        }
-      });
+      if (SearchNotes) {
+        var searchTerm = "%".concat(SearchNotes.concat("%"));
+        const sqlQuery = `SELECT * FROM notes
+              INNER JOIN users ON notes.n_user=users.u_id
+              WHERE notes.n_target=? AND (notes.n_title
+              LIKE ? OR notes.n_text LIKE ? OR notes.n_type LIKE ?)
+              ORDER BY notes.n_create_date DESC`;
+
+        await pool.query(
+          sqlQuery,
+          [TargetID, searchTerm, searchTerm, searchTerm],
+          (err, results) => {
+            if (err) console.log(err);
+            if (results) {
+              res.status(200).json({ data: results });
+            }
+          }
+        );
+      } else {
+        const sqlQuery = `SELECT * FROM notes
+              INNER JOIN users ON notes.n_user=users.u_id
+              WHERE notes.n_target=? 
+              ORDER BY notes.n_create_date DESC`;
+        await pool.query(sqlQuery, [TargetID], (err, results) => {
+          if (err) console.log(err);
+          if (results) {
+            res.status(200).json({ data: results });
+          }
+        });
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -89,7 +111,7 @@ module.exports = {
         }
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      return error.message;
     }
   },
 };

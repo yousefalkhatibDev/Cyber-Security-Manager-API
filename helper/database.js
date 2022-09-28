@@ -21,7 +21,10 @@ const conn = pool.getConnection((err, connection) => {
       console.error("Database connection was refused");
     }
   }
-  if (connection) connection.release();
+  if (connection) {
+    connection.release();
+    console.log("Connected to database")
+  }
   return;
 });
 

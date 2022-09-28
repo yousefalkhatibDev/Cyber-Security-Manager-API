@@ -23,8 +23,9 @@ module.exports = {
   AddMember: async (req, res) => {
     try {
       let { MemeberAgent, MemeberOperation, Token } = req.body;
+      const MemeberUser = jwt.verify(Token, process.env.SECRET).id;
 
-      const MemeberUser = jwt.verify(Token, process.env.SECRET)
+      console.log();
 
       let MemeberID = CommonFunctions.Generate_Id();
       const date = new Date();
@@ -35,6 +36,7 @@ module.exports = {
         [MemeberID, MemeberOperation, MemeberUser, MemeberAgent, date, date],
         (err, results) => {
           if (err) console.error(err);
+
           if (results.affectedRows) {
             res.status(200).json({ data: true });
           }

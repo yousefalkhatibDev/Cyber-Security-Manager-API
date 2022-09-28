@@ -42,34 +42,46 @@ router.post("/get_targets_by_user", (req, res) => {
   Targets.GetTargetsByUser(req, res);
 });
 
+router.post("/get_target_notes_count", (req, res) => {
+  Targets.GetTargetNotesCount(req, res);
+});
+
 router.post("/add_target", (req, res) => {
   Targets.AddTarget(req, res);
 });
 
-router.delete("/remove_target", (req, res) => {
+router.post("/get_target_image", (req, res) => {
+  Targets.GetTargetImage(req, res);
+});
+
+router.post("/remove_target", (req, res) => {
   Targets.RemoveTarget(req, res);
 });
 
-router.put("/update_target_name", (req, res) => {
-  Targets.UpdateName(req, res);
-});
-
-router.put("/update_target_type", (req, res) => {
-  Targets.UpdateType(req, res);
-});
-
-router.put("/update_target_description", (req, res) => {
-  Targets.UpdateDescription(req, res);
-});
-
-router.put("/update_target_location", (req, res) => {
-  Targets.UpdateLocation(req, res);
+router.post("/update_target_info", (req, res) => {
+  Targets.UpdateTargetInfo(req, res);
 });
 
 // ------- Operations -------
 
 router.post("/get_operations", (req, res) => {
   Operations.GetOperations(req, res);
+});
+
+router.post("/get_operation_image", (req, res) => {
+  Operations.GetOperationImage(req, res);
+});
+
+router.post("/get_operation_members_count", (req, res) => {
+  Operations.GetOperationMembersCount(req, res);
+});
+
+router.post("/get_operation_posts_count", (req, res) => {
+  Operations.GetOperationPostsCount(req, res);
+});
+
+router.post("/get_operation_targets_count", (req, res) => {
+  Operations.GetOperationTargetsCount(req, res);
 });
 
 router.post("/get_operation_info", (req, res) => {
@@ -80,37 +92,33 @@ router.post("/add_operation", (req, res) => {
   Operations.AddOperation(req, res);
 });
 
-router.delete("/remove_operation", (req, res) => {
+router.post("/remove_operation", (req, res) => {
   Operations.RemoveOperation(req, res);
 });
 
-router.put("/update_operation_description", (req, res) => {
-  Operations.UpdateDescription(req, res);
+router.post("/update_operation_info", (req, res) => {
+  Operations.UpdateOperationInfo(req, res);
 });
 
-router.put("/update_operation_name", (req, res) => {
-  Operations.UpdateName(req, res);
-});
-
-router.put("/update_operation_state", (req, res) => {
-  Operations.UpdateState(req, res);
+router.post("/update_operation_state", (req, res) => {
+  Operations.UpdateOperationState(req, res);
 });
 
 // ------- Users -------
 
-router.delete("/remove_user", (req, res) => {
+router.post("/remove_user", (req, res) => {
   Users.RemoveUser(req, res);
 });
 
-router.put("/update_user_email", (req, res) => {
+router.post("/update_user_email", (req, res) => {
   Users.UpdateEmail(req, res);
 });
 
-router.put("/update_user_name", (req, res) => {
+router.post("/update_user_name", (req, res) => {
   Users.UpdateName(req, res);
 });
 
-router.put("/update_user_bio", (req, res) => {
+router.post("/update_user_bio", (req, res) => {
   Users.UpdateBio(req, res);
 });
 
@@ -124,7 +132,7 @@ router.post("/add_note", (req, res) => {
   Notes.AddNote(req, res);
 });
 
-router.delete("/remove_note", (req, res) => {
+router.post("/remove_note", (req, res) => {
   Notes.RemoveNote(req, res);
 });
 
@@ -138,7 +146,7 @@ router.post("/add_post", (req, res) => {
   Posts.AddPost(req, res);
 });
 
-router.delete("/remove_post", (req, res) => {
+router.post("/remove_post", (req, res) => {
   Posts.RemovePost(req, res);
 });
 
@@ -152,7 +160,7 @@ router.post("/add_comment", (req, res) => {
   Comments.AddComment(req, res);
 });
 
-router.delete("/remove_comment", (req, res) => {
+router.post("/remove_comment", (req, res) => {
   Comments.RemoveComment(req, res);
 });
 
@@ -178,6 +186,18 @@ router.post("/get_tasks", (req, res) => {
 
 router.post("/add_task", (req, res) => {
   Tasks.AddTask(req, res);
+});
+
+router.post("/remove_task", (req, res) => {
+  Tasks.RemoveTask(req, res);
+});
+
+router.post("/remove_task", (req, res) => {
+  Tasks.RemoveTask(req, res);
+});
+
+router.post("/get_tasks_by_agent", (req, res) => {
+  Tasks.GetTasksByagent(req, res);
 });
 
 // ------- Members -------
