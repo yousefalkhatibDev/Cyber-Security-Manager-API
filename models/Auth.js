@@ -41,8 +41,13 @@ module.exports = {
 
   Register: async (req, res) => {
     try {
-      const { UserEmail, UserName, UserImage, UserBio, UserPassword } =
-        req.body;
+      const {
+        UserEmail,
+        UserName,
+        UserImage = null,
+        UserBio,
+        UserPassword,
+      } = req.body;
 
       let UserID = CommonFunctions.Generate_Id();
       const date = new Date();

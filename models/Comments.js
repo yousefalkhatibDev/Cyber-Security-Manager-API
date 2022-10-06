@@ -24,7 +24,7 @@ module.exports = {
       const { CommnetPost, CommnetText, Token } = req.body;
 
       let CommnetID = CommonFunctions.Generate_Id();
-      let CommnetUser = jwt.verify(Token, process.env.SECRET).id
+      let CommnetUser = jwt.verify(Token, process.env.SECRET).id;
       const date = new Date();
 
       const sqlQuery = "INSERT INTO comments VALUES (?,?,?,?,?,?)";

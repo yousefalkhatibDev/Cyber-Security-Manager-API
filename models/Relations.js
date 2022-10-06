@@ -55,12 +55,16 @@ module.exports = {
         LIKE ? OR targets.t_description LIKE ? OR relations.r_description LIKE ?)
         ORDER BY targets.t_create_date DESC;`;
 
-        await pool.query(sqlQuery, [TargetID, searchTerm, searchTerm, searchTerm], (err, results) => {
-          if (err) console.log(err);
-          if (results) {
-            res.status(200).json({ data: results });
+        await pool.query(
+          sqlQuery,
+          [TargetID, searchTerm, searchTerm, searchTerm],
+          (err, results) => {
+            if (err) console.log(err);
+            if (results) {
+              res.status(200).json({ data: results });
+            }
           }
-        });
+        );
       } else {
         let sqlQuery = `SELECT * FROM relations
           INNER JOIN targets ON targets.t_id=relations.r_target

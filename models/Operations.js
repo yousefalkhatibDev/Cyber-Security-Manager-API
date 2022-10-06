@@ -103,37 +103,6 @@ module.exports = {
       let OperationUser = jwt.verify(Token, process.env.SECRET).id;
       const date = new Date();
 
-      if (OperationImage) {
-        const fileExt = FileName.split(".").pop();
-        base64String = OperationImage;
-        const imageBuffer = decodeBase64Image(OperationImage);
-        if (fileExt === "pdf") {
-          fs.writeFileSync(
-            `./uploads/pdfs/${OperationID + "_" + FileName}`,
-            imageBuffer.data,
-            "base64",
-            function (err) {
-              console.log(err);
-            }
-          );
-          OperationImage = `./uploads/pdfs/${OperationID + "_" + FileName}`;
-        } else {
-          fs.writeFileSync(
-            `./uploads/operations/${OperationID + "_" + FileName}`,
-            imageBuffer.data,
-            "base64",
-            function (err) {
-              console.log(err);
-            }
-          );
-          OperationImage = `./uploads/operations/${
-            OperationID + "_" + FileName
-          }`;
-        }
-      } else {
-        OperationImage = "";
-      }
-
       const sqlQuery = `INSERT INTO operations VALUES (?,?,?,?,?,?,?,?,?)`;
       await pool.query(
         sqlQuery,
@@ -173,8 +142,8 @@ module.exports = {
       const sqlQuery = `SELECT o_image FROM operations WHERE o_id=?`;
       await pool.query(sqlQuery, [OperationID], (err, results) => {
         if (err) console.log(err);
-        if (results[0].o_image !== "") {
-          res.status(200).json({ data: base64_encode(results[0].o_image) });
+        if (results.length > 0) {
+          res.status(200).json({ data: results[0] });
         } else {
           res.status(200).json({ data: false });
         }
@@ -219,14 +188,18 @@ module.exports = {
 
       const sqlQuery = `UPDATE operations SET o_name=?, o_description=? WHERE o_id=?`;
 
-      await pool.query(sqlQuery, [OperationName, OperationDescription, OperationID], (err, results) => {
-        if (err) console.log(err);
-        if (results.affectedRows) {
-          res.status(200).json({ data: true });
-        } else {
-          res.status(500).json({ data: false });
+      await pool.query(
+        sqlQuery,
+        [OperationName, OperationDescription, OperationID],
+        (err, results) => {
+          if (err) console.log(err);
+          if (results.affectedRows) {
+            res.status(200).json({ data: true });
+          } else {
+            res.status(500).json({ data: false });
+          }
         }
-      });
+      );
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -237,14 +210,18 @@ module.exports = {
       const { OperationID, OperationState } = req.body;
 
       const sqlQuery = `UPDATE operations SET o_state=? WHERE o_id=?`;
-      await pool.query(sqlQuery, [OperationState, OperationID], (err, results) => {
-        if (err) console.log(err);
-        if (results.affectedRows) {
-          res.status(200).json({ data: true });
-        } else {
-          res.status(500).json({ data: false });
+      await pool.query(
+        sqlQuery,
+        [OperationState, OperationID],
+        (err, results) => {
+          if (err) console.log(err);
+          if (results.affectedRows) {
+            res.status(200).json({ data: true });
+          } else {
+            res.status(500).json({ data: false });
+          }
         }
-      });
+      );
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

@@ -134,45 +134,14 @@ module.exports = {
         TargetOperation,
         TargetName,
         TargetType,
-        TargetImage,
         TargetDescription,
         TargetLocation,
         Base64State,
-        FileName,
       } = req.body;
 
       let TargetID = CommonFunctions.Generate_Id();
       let TargetUser = jwt.verify(Token, process.env.SECRET).id;
       const date = new Date();
-
-      if (Base64State) {
-        const fileExt = FileName.split(".").pop();
-        base64String = Base64State;
-        const imageBuffer = decodeBase64Image(Base64State);
-        if (fileExt === "pdf") {
-          fs.writeFileSync(
-            `./uploads/pdfs/${OperationID + "_" + FileName}`,
-            imageBuffer.data,
-            "base64",
-            function (err) {
-              console.log(err);
-            }
-          );
-          Base64State = `./uploads/pdfs/${OperationID + "_" + FileName}`;
-        } else {
-          fs.writeFileSync(
-            `./uploads/targets/${TargetID + "_" + FileName}`,
-            imageBuffer.data,
-            "base64",
-            function (err) {
-              console.log(err);
-            }
-          );
-          Base64State = `./uploads/targets/${TargetID + "_" + FileName}`;
-        }
-      } else {
-        Base64State = "";
-      }
 
       const sqlQuery = "INSERT INTO targets VALUES (?,?,?,?,?,?,?,?,?,?)";
       await pool.query(
@@ -232,7 +201,7 @@ module.exports = {
       await pool.query(sqlQuery, [TargetID], (err, results) => {
         if (err) console.log(err);
         if (results[0].t_image !== "") {
-          res.status(200).json({ data: base64_encode(results[0].t_image) });
+          res.status(200).json({ data: results[0] });
         } else {
           res.status(200).json({ data: false });
         }
@@ -244,17 +213,28 @@ module.exports = {
 
   UpdateTargetInfo: async (req, res) => {
     try {
-      const { TargetID, TargetName, TargetDescription, TargetType, TargetLocation } = req.body;
+      const {
+        TargetID,
+        TargetName,
+        TargetDescription,
+        TargetType,
+        TargetLocation,
+      } = req.body;
 
-      const sqlQuery = "UPDATE targets SET t_name=?, t_description=?, t_location=? WHERE t_id=?";
-      await pool.query(sqlQuery, [TargetName, TargetDescription, TargetLocation, TargetID], (err, results) => {
-        if (err) console.log(err);
-        if (results.affectedRows) {
-          res.status(200).json({ data: true });
-        } else {
-          res.status(500).json({ data: false });
+      const sqlQuery =
+        "UPDATE targets SET t_name=?, t_description=?, t_location=? WHERE t_id=?";
+      await pool.query(
+        sqlQuery,
+        [TargetName, TargetDescription, TargetLocation, TargetID],
+        (err, results) => {
+          if (err) console.log(err);
+          if (results.affectedRows) {
+            res.status(200).json({ data: true });
+          } else {
+            res.status(500).json({ data: false });
+          }
         }
-      });
+      );
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
