@@ -8,17 +8,22 @@ module.exports = {
   Login: async (req, res) => {
     try {
       const { Email, Password } = req.body;
-
       const sqlQuery = "SELECT * FROM users WHERE u_email=?";
+
       await pool.query(sqlQuery, [Email, Password], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Logging The User" });
+        }
         if (results.length > 0) {
           const Compare = bcrypt.compareSync(Password, results[0].u_password);
           if (Compare) {
             const token = jwt.sign({ id: results[0].u_id }, AuthConfig.secret, {
               expiresIn: 86400, // 24 hours
             });
-            req.body.session = token;
+            req.session.token = token;
             res.status(200).json({ data: token });
           }
         } else {
@@ -48,11 +53,10 @@ module.exports = {
         UserBio,
         UserPassword,
       } = req.body;
-
-      let UserID = CommonFunctions.Generate_Id();
+      const UserID = CommonFunctions.Generate_Id();
       const date = new Date();
-
       const sqlQuery = "INSERT INTO users VALUES (?,?,?,?,?,?,?,?)";
+
       await pool.query(
         sqlQuery,
         [
@@ -66,8 +70,13 @@ module.exports = {
           date,
         ],
         (err, results) => {
-          if (err) console.log(err);
-          if (results) {
+          if (err) {
+            console.log(err);
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Register The User" });
+          }
+          if (results.affectedRows) {
             res.status(200).json({ data: true });
           }
         }

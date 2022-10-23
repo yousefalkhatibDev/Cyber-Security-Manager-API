@@ -9,32 +9,40 @@ module.exports = {
 
       if (search) {
         var searchTerm = "%".concat(search.concat("%"));
-        const sqlQuery = `SELECT * FROM tasks
-            INNER JOIN users ON users.u_id=tasks.tk_agent
-            WHERE tasks.tk_operation=? AND (tasks.tk_title
-            LIKE ? OR tasks.tk_content LIKE ?)
-            ORDER BY tasks.tk_create_date DESC`;
+        const sqlQuery = `SELECT * FROM tasks INNER JOIN users ON users.u_id=tasks.tk_agent
+              WHERE tasks.tk_operation=? AND (tasks.tk_title LIKE ? OR tasks.tk_content LIKE ?) ORDER BY tasks.tk_create_date DESC`;
 
         await pool.query(
           sqlQuery,
           [OperationID, searchTerm, searchTerm],
           (err, results) => {
-            if (err) console.log(err);
+            if (err) {
+              console.log(err);
+              res
+                .status(200)
+                .json({ ErrorMessage: "Error While Getting Tasks" });
+            }
             if (results) {
               res.status(200).json({ data: results });
+            } else {
+              res
+                .status(200)
+                .json({ ErrorMessage: "Error While Getting Tasks" });
             }
           }
         );
       } else {
-        let sqlQuery = `SELECT * FROM tasks
-            INNER JOIN users ON users.u_id=tasks.tk_agent
-            WHERE tasks.tk_operation=?
-            ORDER BY tasks.tk_create_date DESC`;
+        let sqlQuery = `SELECT * FROM tasks INNER JOIN users ON users.u_id=tasks.tk_agent WHERE tasks.tk_operation=? ORDER BY tasks.tk_create_date DESC`;
 
         await pool.query(sqlQuery, [OperationID], (err, results) => {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            res.status(200).json({ ErrorMessage: "Error While Getting Tasks" });
+          }
           if (results) {
             res.status(200).json({ data: results });
+          } else {
+            res.status(200).json({ ErrorMessage: "Error While Getting Tasks" });
           }
         });
       }
@@ -73,9 +81,14 @@ module.exports = {
           TaskOperation,
         ],
         (err, results) => {
-          if (err) console.error(err);
+          if (err) {
+            console.log(err);
+            res.status(200).json({ ErrorMessage: "Error While Adding Task" });
+          }
           if (results.affectedRows) {
             res.status(200).json({ data: true });
+          } else {
+            res.status(200).json({ ErrorMessage: "Error While Adding Task" });
           }
         }
       );
@@ -90,9 +103,14 @@ module.exports = {
 
       const sqlQuery = "DELETE FROM tasks WHERE tk_id=?";
       await pool.query(sqlQuery, [TaskID], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res.status(200).json({ ErrorMessage: "Error While Removing Task" });
+        }
         if (results.affectedRows) {
           res.status(200).json({ data: true });
+        } else {
+          res.status(200).json({ ErrorMessage: "Error While Removing Task" });
         }
       });
     } catch (error) {
@@ -100,20 +118,22 @@ module.exports = {
     }
   },
 
-  GetTasksByagent: async (req, res) => {
+  GetTasksByAgent: async (req, res) => {
     try {
       const { TaskOperation, Token } = req.body;
-      let TaskUser = jwt.verify(Token, process.env.SECRET).id;
-
-      let sqlQuery = `SELECT * FROM tasks
-          INNER JOIN users ON users.u_id=tasks.tk_agent
-          WHERE tasks.tk_operation=? AND tasks.tk_agent=?
-          ORDER BY tasks.tk_create_date DESC`;
+      const TaskUser = jwt.verify(Token, process.env.SECRET).id;
+      const sqlQuery = `SELECT * FROM tasks INNER JOIN users ON users.u_id=tasks.tk_agent WHERE tasks.tk_operation=? AND tasks.tk_agent=?
+            ORDER BY tasks.tk_create_date DESC`;
 
       await pool.query(sqlQuery, [TaskOperation, TaskUser], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res.status(200).json({ ErrorMessage: "Error While Getting Tasks By Agent" });
+        }
         if (results) {
           res.status(200).json({ data: results });
+        } else {
+          res.status(200).json({ ErrorMessage: "Error While Getting Tasks By Agent" });
         }
       });
     } catch (error) {
@@ -121,11 +141,14 @@ module.exports = {
     }
   },
 
-  Remove_tasks_By_Operation_Internal: async (t_opeartion) => {
+  Remove_Tasks_By_Operation_Internal: async (t_opeartion) => {
     try {
       const sqlQuery = "DELETE FROM tasks WHERE tk_operation=?";
       await pool.query(sqlQuery, [t_opeartion], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res.status(200).json({ ErrorMessage: "Error While Removing Tasks By Operation ( Internal )" });
+        }
         if (results.affectedRows) {
           return true;
         } else {

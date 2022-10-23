@@ -19,9 +19,18 @@ module.exports = {
           sqlQuery,
           [TargetID, searchTerm, searchTerm, searchTerm],
           (err, results) => {
-            if (err) console.log(err);
+            if (err) {
+              console.log(err);
+              res
+                .status(200)
+                .json({ ErrorMessage: "Error While Getting Relations" });
+            }
             if (results) {
               res.status(200).json({ data: results });
+            } else {
+              res
+                .status(200)
+                .json({ ErrorMessage: "Error While Getting Relations" });
             }
           }
         );
@@ -32,9 +41,18 @@ module.exports = {
             ORDER BY targets.t_create_date DESC`;
 
         await pool.query(sqlQuery, [TargetID], (err, results) => {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Getting Relations" });
+          }
           if (results) {
             res.status(200).json({ data: results });
+          } else {
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Getting Relations" });
           }
         });
       }
@@ -59,9 +77,22 @@ module.exports = {
           sqlQuery,
           [TargetID, searchTerm, searchTerm, searchTerm],
           (err, results) => {
-            if (err) console.log(err);
+            if (err) {
+              console.log(err);
+              res
+                .status(200)
+                .json({
+                  ErrorMessage: "Error While Getting Related-By Targets",
+                });
+            }
             if (results) {
               res.status(200).json({ data: results });
+            } else {
+              res
+                .status(200)
+                .json({
+                  ErrorMessage: "Error While Getting Related-By Targets",
+                });
             }
           }
         );
@@ -72,9 +103,18 @@ module.exports = {
           ORDER BY targets.t_create_date DESC;`;
 
         await pool.query(sqlQuery, [TargetID], (err, results) => {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Getting Related-By Targets" });
+          }
           if (results) {
             res.status(200).json({ data: results });
+          } else {
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Getting Related-By Targets" });
           }
         });
       }
@@ -92,9 +132,8 @@ module.exports = {
         RelationDescription,
         RelationTarget,
       } = req.body;
-
-      let RelationID = CommonFunctions.Generate_Id();
-      let RelationUser = jwt.verify(Token, process.env.SECRET).id;
+      const RelationID = CommonFunctions.Generate_Id();
+      const RelationUser = jwt.verify(Token, process.env.SECRET).id;
       const date = new Date();
 
       const sqlQuery = "INSERT INTO relations VALUES (?,?,?,?,?,?,?,?)";
@@ -111,9 +150,18 @@ module.exports = {
           date,
         ],
         (err, results) => {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Adding Relation" });
+          }
           if (results.affectedRows) {
             res.status(200).json({ data: true });
+          } else {
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Adding Relation" });
           }
         }
       );

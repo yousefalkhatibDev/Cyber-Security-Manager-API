@@ -10,7 +10,10 @@ module.exports = {
       let sqlQuery =
         "SELECT * FROM members INNER JOIN users ON users.u_id=members.m_agent WHERE members.m_operation=? ORDER BY members.m_create_date DESC";
       await pool.query(sqlQuery, [OperationID], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res.status(200).json({ ErrorMessage: "Error While Getting Members" });
+        }
         if (results) {
           res.status(200).json({ data: results });
         }
@@ -25,8 +28,6 @@ module.exports = {
       let { MemeberAgent, MemeberOperation, Token } = req.body;
       const MemeberUser = jwt.verify(Token, process.env.SECRET).id;
 
-      console.log();
-
       let MemeberID = CommonFunctions.Generate_Id();
       const date = new Date();
 
@@ -35,10 +36,18 @@ module.exports = {
         sqlQuery,
         [MemeberID, MemeberOperation, MemeberUser, MemeberAgent, date, date],
         (err, results) => {
-          if (err) console.error(err);
-
+          if (err) {
+            console.log(err);
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Adding New Member" });
+          }
           if (results.affectedRows) {
             res.status(200).json({ data: true });
+          } else {
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Adding New Member" });
           }
         }
       );
@@ -64,9 +73,16 @@ module.exports = {
           date,
         ],
         (err, results) => {
-          if (err) console.error(err);
+          if (err) {
+            console.log(err);
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Adding New Member" });
+          }
           if (results.affectedRows) {
             return true;
+          } else {
+            return false
           }
         }
       );

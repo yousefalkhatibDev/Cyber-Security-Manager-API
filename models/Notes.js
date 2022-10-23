@@ -19,7 +19,12 @@ module.exports = {
           sqlQuery,
           [TargetID, searchTerm, searchTerm, searchTerm],
           (err, results) => {
-            if (err) console.log(err);
+            if (err) {
+              console.log(err);
+              res
+                .status(200)
+                .json({ ErrorMessage: "Error While Getting Notes" });
+            }
             if (results) {
               res.status(200).json({ data: results });
             }
@@ -31,7 +36,12 @@ module.exports = {
               WHERE notes.n_target=? 
               ORDER BY notes.n_create_date DESC`;
         await pool.query(sqlQuery, [TargetID], (err, results) => {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Getting Comments" });
+          }
           if (results) {
             res.status(200).json({ data: results });
           }
@@ -72,9 +82,14 @@ module.exports = {
           date,
         ],
         (err, results) => {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            res.status(200).json({ ErrorMessage: "Error While Adding Note" });
+          }
           if (results.affectedRows) {
             res.status(200).json({ data: true });
+          } else {
+            res.status(200).json({ ErrorMessage: "Error While Adding Note" });
           }
         }
       );
@@ -89,9 +104,14 @@ module.exports = {
 
       const sqlQuery = "DELETE FROM notes WHERE n_id=?";
       await pool.query(sqlQuery, [NoteID], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res.status(200).json({ ErrorMessage: "Error While Removing Note" });
+        }
         if (results.affectedRows) {
           res.status(200).json({ data: true });
+        } else {
+          res.status(200).json({ ErrorMessage: "Error While Removing Note" });
         }
       });
     } catch (error) {
@@ -103,7 +123,10 @@ module.exports = {
     try {
       const sqlQuery = "DELETE FROM notes WHERE n_target=?";
       await pool.query(sqlQuery, [t_id], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res.status(200).json({ ErrorMessage: "Error While Removing Note" });
+        }
         if (results.affectedRows) {
           return true;
         } else {

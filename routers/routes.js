@@ -1,18 +1,17 @@
 const express = require("express");
-const cors = require("cors");
 const router = express.Router();
 
 // Models
-let Targets = require("../models/Targets");
-let Operations = require("../models/Operations");
-let Users = require("../models/Users");
-let Notes = require("../models/Notes");
-let Posts = require("../models/Posts");
-let Comments = require("../models/Comments");
-let Auth = require("../models/Auth");
-let Relations = require("../models/Relations");
-let Tasks = require("../models/Tasks");
-let Members = require("../models/Members");
+const Targets = require("../models/Targets");
+const Operations = require("../models/Operations");
+const Users = require("../models/Users");
+const Notes = require("../models/Notes");
+const Posts = require("../models/Posts");
+const Comments = require("../models/Comments");
+const Auth = require("../models/Auth");
+const Relations = require("../models/Relations");
+const Tasks = require("../models/Tasks");
+const Members = require("../models/Members");
 
 // ------- Auth -------
 
@@ -62,6 +61,22 @@ router.post("/update_target_info", (req, res) => {
   Targets.UpdateTargetInfo(req, res);
 });
 
+router.post("/get_last_accessed_target", (req, res) => {
+  Targets.GetLastAccessedTarget(req, res);
+});
+
+router.post("/set_last_accessed_target", (req, res) => {
+  Targets.SetLastAccessedTarget(req, res);
+});
+
+router.post("/get_targets_count", (req, res) => {
+  Targets.GetTargetsCount(req, res);
+});
+
+router.post("/get_recent_targets", (req, res) => {
+  Targets.GetRecentTargets(req, res);
+});
+
 // ------- Operations -------
 
 router.post("/get_operations", (req, res) => {
@@ -104,24 +119,27 @@ router.post("/update_operation_state", (req, res) => {
   Operations.UpdateOperationState(req, res);
 });
 
+router.post("/get_last_accessed_operation", (req, res) => {
+  Operations.GetLastAccessedOperation(req, res);
+});
+
+router.post("/set_last_accessed_operation", (req, res) => {
+  Operations.SetLastAccessedOperation(req, res);
+});
+
+router.post("/get_operations_count", (req, res) => {
+  Operations.GetOperationsCount(req, res);
+});
+
 // ------- Users -------
 
 router.post("/remove_user", (req, res) => {
   Users.RemoveUser(req, res);
 });
 
-router.post("/update_user_email", (req, res) => {
-  Users.UpdateEmail(req, res);
+router.post("/update_user_info", (req, res) => {
+  Users.UpdateUserInfo(req, res);
 });
-
-router.post("/update_user_name", (req, res) => {
-  Users.UpdateName(req, res);
-});
-
-router.post("/update_user_bio", (req, res) => {
-  Users.UpdateBio(req, res);
-});
-
 // ------- Notes -------
 
 router.post("/get_notes", (req, res) => {
@@ -148,6 +166,10 @@ router.post("/add_post", (req, res) => {
 
 router.post("/remove_post", (req, res) => {
   Posts.RemovePost(req, res);
+});
+
+router.post("/get_recent_posts", (req, res) => {
+  Posts.GetRecentPosts(req, res);
 });
 
 // ------- Comments -------
@@ -197,7 +219,7 @@ router.post("/remove_task", (req, res) => {
 });
 
 router.post("/get_tasks_by_agent", (req, res) => {
-  Tasks.GetTasksByagent(req, res);
+  Tasks.GetTasksByAgent(req, res);
 });
 
 // ------- Members -------

@@ -6,10 +6,17 @@ module.exports = {
   GetComments: async (req, res) => {
     try {
       const { PostID } = req.body;
-      const sqlQuery =
-        "SELECT *, users.u_name FROM comments INNER JOIN users ON comments.c_user=users.u_id WHERE comments.c_post=? ORDER BY comments.c_create_date DESC";
+      const sqlQuery = `SELECT *, users.u_name FROM comments
+            INNER JOIN users ON comments.c_user=users.u_id WHERE comments.c_post=?
+            ORDER BY comments.c_create_date DESC`;
+
       await pool.query(sqlQuery, [PostID], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Getting Comments" });
+        }
         if (results) {
           res.status(200).json({ data: results });
         }
@@ -32,9 +39,18 @@ module.exports = {
         sqlQuery,
         [CommnetID, CommnetUser, CommnetPost, CommnetText, date, date],
         (err, results) => {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Adding New Comment" });
+          }
           if (results.affectedRows) {
             res.status(200).json({ data: true });
+          } else {
+            res
+              .status(200)
+              .json({ ErrorMessage: "Error While Adding New Comment" });
           }
         }
       );
@@ -49,9 +65,18 @@ module.exports = {
 
       const sqlQuery = "DELETE FROM comments WHERE c_id=?";
       await pool.query(sqlQuery, [CommnetID], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Removing Comment" });
+        }
         if (results.affectedRows) {
           res.status(200).json({ data: true });
+        } else {
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Removing Comment" });
         }
       });
     } catch (error) {
@@ -63,7 +88,12 @@ module.exports = {
     try {
       const sqlQuery = "DELETE FROM comments WHERE c_post=?";
       await pool.query(sqlQuery, [PostID], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Removing Comment" });
+        }
         if (results.affectedRows) {
           return true;
         } else {

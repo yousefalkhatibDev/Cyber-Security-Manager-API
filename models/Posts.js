@@ -20,11 +20,18 @@ module.exports = {
           sqlQuery,
           [OperationID, searchTerm, searchTerm],
           (err, results) => {
-            if (err) console.log(err);
+            if (err) {
+              console.log(err);
+              res
+                .status(200)
+                .json({ ErrorMessage: "Error While Getting Posts" });
+            }
             if (results) {
               res.status(200).json({ data: results });
             } else {
-              res.status(500).json({ error: false });
+              res
+                .status(200)
+                .json({ ErrorMessage: "Error While Getting Posts" });
             }
           }
         );
@@ -35,12 +42,14 @@ module.exports = {
               ORDER BY posts.p_create_date DESC`;
 
         pool.query(sqlQuery, [OperationID], (err, results) => {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            res.status(200).json({ ErrorMessage: "Error While Getting Posts" });
+          }
           if (results) {
-            // results[0]["p_user_name"] = owner[0].u_name
             res.status(200).json({ data: results });
           } else {
-            res.status(500).json({ error: false });
+            res.status(200).json({ ErrorMessage: "Error While Getting Posts" });
           }
         });
       }
@@ -73,9 +82,14 @@ module.exports = {
           date,
         ],
         (err, results) => {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            res.status(200).json({ ErrorMessage: "Error While Adding Post" });
+          }
           if (results.affectedRows) {
             res.status(200).json({ data: true });
+          } else {
+            res.status(200).json({ ErrorMessage: "Error While Adding Post" });
           }
         }
       );
@@ -90,14 +104,19 @@ module.exports = {
 
       const sqlQuery = "DELETE FROM posts WHERE p_id=?";
       await pool.query(sqlQuery, [PostID], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res.status(200).json({ ErrorMessage: "Error While Removing Post" });
+        }
         if (results.affectedRows) {
           let post_comments = Comments.Remove_Comments_By_Post_Internal(PostID);
           if (post_comments) {
             res.status(200).json({ data: true });
           } else {
-            res.status(500).json({ data: false });
+            res.status(200).json({ ErrorMessage: "Error While Removing Post" });
           }
+        } else {
+          res.status(200).json({ ErrorMessage: "Error While Removing Post" });
         }
       });
     } catch (error) {
@@ -108,12 +127,47 @@ module.exports = {
   Remove_Posts_By_Operation_Internal: async (p_opeartion) => {
     try {
       const sqlQuery = "DELETE FROM posts WHERE p_operation=?";
+
       await pool.query(sqlQuery, [p_opeartion], (err, results) => {
-        if (err) console.log(err);
+        if (err) {
+          console.log(err);
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Removing Post ( Internal )" });
+        }
         if (results.affectedRows) {
           return true;
         } else {
           return false;
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  GetRecentPosts: async (p_opeartion) => {
+    try {
+      const { Token } = req.body;
+      const UserID = jwt.verify(Token, process.env.SECRET).id;
+      const sqlQuery = `SELECT * FROM 
+            (SELECT o_id FROM operations LEFT JOIN members ON members.m_operation=operations.o_id 
+            WHERE members.m_agent=?) AS UserOperations
+            JOIN posts ON p_operation=UserOperations.o_id ORDER BY p_update_date DESC`;
+
+      await pool.query(sqlQuery, [UserID], (err, results) => {
+        if (err) {
+          console.log(err);
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Getting Recent Posts" });
+        }
+        if (results.affectedRows) {
+          res.status(200).json({ data: results });
+        } else {
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Getting Recent Posts" });
         }
       });
     } catch (error) {
