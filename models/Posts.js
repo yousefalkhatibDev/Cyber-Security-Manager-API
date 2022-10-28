@@ -124,7 +124,7 @@ module.exports = {
     }
   },
 
-  Remove_Posts_By_Operation_Internal: async (p_opeartion) => {
+  Remove_Posts_By_Operation_Internal: async (req, res) => {
     try {
       const sqlQuery = "DELETE FROM posts WHERE p_operation=?";
 
@@ -146,7 +146,7 @@ module.exports = {
     }
   },
 
-  GetRecentPosts: async (p_opeartion) => {
+  GetRecentPosts: async (req, res) => {
     try {
       const { Token } = req.body;
       const UserID = jwt.verify(Token, process.env.SECRET).id;
@@ -162,7 +162,7 @@ module.exports = {
             .status(200)
             .json({ ErrorMessage: "Error While Getting Recent Posts" });
         }
-        if (results.affectedRows) {
+        if (results.length > 0) {
           res.status(200).json({ data: results });
         } else {
           res

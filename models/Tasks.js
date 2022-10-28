@@ -128,12 +128,42 @@ module.exports = {
       await pool.query(sqlQuery, [TaskOperation, TaskUser], (err, results) => {
         if (err) {
           console.log(err);
-          res.status(200).json({ ErrorMessage: "Error While Getting Tasks By Agent" });
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Getting Tasks By Agent" });
         }
         if (results) {
           res.status(200).json({ data: results });
         } else {
-          res.status(200).json({ ErrorMessage: "Error While Getting Tasks By Agent" });
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Getting Tasks By Agent" });
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  UpdateTaskState: async (req, res) => {
+    try {
+      const { TaskID, TaskStatus } = req.body;
+      const sqlQuery = `UPDATE tasks SET tk_state=?, tk_update_date=? WHERE tk_id=?`;
+      const date = new Date();
+
+      await pool.query(sqlQuery, [TaskStatus, date, TaskID], (err, results) => {
+        if (err) {
+          console.log(err);
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Updating Task Status" });
+        }
+        if (results) {
+          res.status(200).json({ data: results });
+        } else {
+          res
+            .status(200)
+            .json({ ErrorMessage: "Error While Updating Task Status" });
         }
       });
     } catch (error) {
@@ -147,7 +177,10 @@ module.exports = {
       await pool.query(sqlQuery, [t_opeartion], (err, results) => {
         if (err) {
           console.log(err);
-          res.status(200).json({ ErrorMessage: "Error While Removing Tasks By Operation ( Internal )" });
+          res.status(200).json({
+            ErrorMessage:
+              "Error While Removing Tasks By Operation ( Internal )",
+          });
         }
         if (results.affectedRows) {
           return true;

@@ -395,7 +395,7 @@ module.exports = {
     }
   },
 
-  GetRecentTargets: async (p_opeartion) => {
+  GetRecentTargets: async (req, res) => {
     try {
       const { Token } = req.body;
       const UserID = jwt.verify(Token, process.env.SECRET).id;
@@ -411,7 +411,7 @@ module.exports = {
             .status(200)
             .json({ ErrorMessage: "Error While Getting Recent Targets" });
         }
-        if (results.affectedRows) {
+        if (results.length > 0) {
           res.status(200).json({ data: results });
         } else {
           res

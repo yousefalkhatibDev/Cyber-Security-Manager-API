@@ -140,6 +140,15 @@ router.post("/remove_user", (req, res) => {
 router.post("/update_user_info", (req, res) => {
   Users.UpdateUserInfo(req, res);
 });
+
+router.post("/get_user_info", (req, res) => {
+  Users.GetUserInfo(req, res);
+});
+
+router.post("/update_user_image", (req, res) => {
+  Users.UpdateUserImage(req, res);
+});
+
 // ------- Notes -------
 
 router.post("/get_notes", (req, res) => {
@@ -220,6 +229,10 @@ router.post("/remove_task", (req, res) => {
 
 router.post("/get_tasks_by_agent", (req, res) => {
   Tasks.GetTasksByAgent(req, res);
+});
+
+router.post("/update_task_status", (req, res) => {
+  Tasks.UpdateTaskState(req, res);
 });
 
 // ------- Members -------

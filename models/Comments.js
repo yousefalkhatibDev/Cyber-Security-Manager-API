@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken");
 module.exports = {
   GetComments: async (req, res) => {
     try {
-      const { PostID } = req.body;
+      const { PostID, Token } = req.body;
+      const UserID = jwt.verify(Token, process.env.SECRET).id;
       const sqlQuery = `SELECT *, users.u_name FROM comments
             INNER JOIN users ON comments.c_user=users.u_id WHERE comments.c_post=?
             ORDER BY comments.c_create_date DESC`;
@@ -18,6 +19,14 @@ module.exports = {
             .json({ ErrorMessage: "Error While Getting Comments" });
         }
         if (results) {
+          results.map((comment, i) => {
+            if (comment.c_user === UserID) {
+              comment.BelongToUser = true;
+            } else {
+              comment.BelongToUser = false;
+            }
+          });
+
           res.status(200).json({ data: results });
         }
       });
