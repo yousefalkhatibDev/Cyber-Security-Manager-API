@@ -150,10 +150,8 @@ module.exports = {
     try {
       const { Token } = req.body;
       const UserID = jwt.verify(Token, process.env.SECRET).id;
-      const sqlQuery = `SELECT * FROM 
-            (SELECT o_id FROM operations LEFT JOIN members ON members.m_operation=operations.o_id 
-            WHERE members.m_agent=?) AS UserOperations
-            JOIN posts ON p_operation=UserOperations.o_id ORDER BY p_update_date DESC`;
+      const sqlQuery = `SELECT * FROM (SELECT * FROM (SELECT o_id FROM operations LEFT JOIN members ON members.m_operation=operations.o_id WHERE members.m_agent="c694568f-d") AS UserOperations
+            JOIN posts ON p_operation=UserOperations.o_id ORDER BY p_update_date DESC) AS PostsUsers JOIN users ON u_id=PostsUsers.p_user ORDER BY p_update_date DESC`;
 
       await pool.query(sqlQuery, [UserID], (err, results) => {
         if (err) {
