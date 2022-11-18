@@ -413,7 +413,7 @@ module.exports = {
             .status(200)
             .json({ ErrorMessage: "Error While Getting Recent Targets" });
         }
-        if (results.length > 0) {
+        if (results) {
           res.status(200).json({ data: results });
         } else {
           res
