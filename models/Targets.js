@@ -358,7 +358,9 @@ module.exports = {
         }
         if (results.affectedRows) {
           res.status(200).json({ data: true });
-        } else {
+        } 
+        else if (results.length > 0) res.status(200).json({data: [] });
+        else {
           res
             .status(200)
             .json({ ErrorMessage: "Error While Setting Last Accessed Target" });
