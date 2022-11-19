@@ -374,7 +374,6 @@ module.exports = {
           });
         }
         if (results) res.status(200).json({ data: results });
-        // else if (results.length > 0) res.status(200).json({data: [] });
         else res.status(200).json({ ErrorMessage: "Error While Getting Last Accessed Operation", });
       });
     } catch (error) {

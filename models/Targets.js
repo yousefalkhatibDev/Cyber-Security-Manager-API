@@ -333,7 +333,6 @@ module.exports = {
         if (results) {
           res.status(200).json({ data: results });
         }
-        // else if (results.length > 0) res.status(200).json({ data: [] });
         else {
           res
             .status(200)
@@ -361,7 +360,6 @@ module.exports = {
         if (results.affectedRows) {
           res.status(200).json({ data: true });
         }
-        else if (results.length > 0) res.status(200).json({ data: [] });
         else {
           res
             .status(200)
@@ -415,7 +413,7 @@ module.exports = {
             .status(200)
             .json({ ErrorMessage: "Error While Getting Recent Targets" });
         }
-        if (results.length > 0) {
+        if (results) {
           res.status(200).json({ data: results });
         } else {
           res

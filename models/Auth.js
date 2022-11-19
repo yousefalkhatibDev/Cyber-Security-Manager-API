@@ -49,7 +49,7 @@ module.exports = {
       const {
         UserEmail,
         UserName,
-        UserImage = null,
+        UserImage,
         UserBio,
         UserPassword,
       } = req.body;
