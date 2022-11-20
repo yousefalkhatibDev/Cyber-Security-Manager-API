@@ -10,13 +10,8 @@ module.exports = {
       const { Email, Password } = req.body;
       const sqlQuery = "SELECT * FROM users WHERE u_email=?";
 
-      await pool.query(sqlQuery, [Email, Password], (err, results) => {
-        if (err) {
-          console.log(err);
-          res
-            .status(200)
-            .json({ ErrorMessage: "Error While Logging The User" });
-        }
+      await pool.query(sqlQuery, [Email], (err, results) => {
+        if (err) res.status(200).json({ ErrorMessage: "Error While Logging The User" });
         if (results.length > 0) {
           const Compare = bcrypt.compareSync(Password, results[0].u_password);
           if (Compare) {
@@ -25,6 +20,9 @@ module.exports = {
             });
             req.session.token = token;
             res.status(200).json({ data: token });
+          }
+          else {
+            res.status(200).json({ data: false });
           }
         } else {
           res.status(200).json({ data: false });
