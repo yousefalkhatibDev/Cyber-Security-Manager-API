@@ -68,15 +68,8 @@ module.exports = {
           date,
         ],
         (err, results) => {
-          if (err) {
-            console.log(err);
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Register The User" });
-          }
-          if (results.affectedRows) {
-            res.status(200).json({ data: true });
-          }
+          if (err) res.status(200).json({ ErrorMessage: "Error While Register The User" });
+          if (results.affectedRows) res.status(200).json({ data: true });
         }
       );
     } catch (error) {

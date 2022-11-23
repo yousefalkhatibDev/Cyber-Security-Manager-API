@@ -245,4 +245,8 @@ router.post("/add_member", (req, res) => {
   Members.AddMember(req, res);
 });
 
+router.post("/remove_member", (req, res) => {
+  Members.RemoveMember(req, res);
+});
+
 module.exports = router;

@@ -13,19 +13,9 @@ module.exports = {
       const sqlQuery = "SELECT * FROM operations WHERE o_id=?";
 
       await pool.query(sqlQuery, [OperationID], (err, results) => {
-        if (err) {
-          console.log(err);
-          res
-            .status(200)
-            .json({ ErrorMessage: "Error While Getting Operation Info" });
-        }
-        if (results.length > 0) {
-          res.status(200).json({ data: results });
-        } else {
-          res
-            .status(200)
-            .json({ ErrorMessage: "Error While Getting Operation Info" });
-        }
+        if (err) res.status(200).json({ ErrorMessage: "Error While Getting Operation Info" });
+        if (results.length > 0) res.status(200).json({ data: results });
+        else res.status(200).json({ ErrorMessage: "Error While Getting Operation Info" });
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -45,19 +35,9 @@ module.exports = {
               LIKE ? OR operations.o_description LIKE ?)
               ORDER BY operations.o_create_date DESC `;
 
-        await pool.query(
-          sqlQuery,
-          [UserID, searchTerm, searchTerm],
-          (err, results) => {
-            if (err) {
-              console.log(err);
-              res
-                .status(200)
-                .json({ ErrorMessage: "Error While Getting Operations" });
-            }
-            if (results) {
-              res.status(200).json({ data: results });
-            }
+        await pool.query(sqlQuery, [UserID, searchTerm, searchTerm], (err, results) => {
+            if (err) res.status(200).json({ ErrorMessage: "Error While Getting Operations" });
+            if (results) res.status(200).json({ data: results });
           }
         );
       } else {
@@ -66,15 +46,8 @@ module.exports = {
               WHERE members.m_agent=? ORDER BY operations.o_create_date DESC`;
 
         await pool.query(sqlQuery, [UserID], (err, results) => {
-          if (err) {
-            console.log(err);
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Getting Operations" });
-          }
-          if (results) {
-            res.status(200).json({ data: results });
-          }
+          if (err) res.status(200).json({ ErrorMessage: "Error While Getting Operations" });
+          if (results) res.status(200).json({ data: results });
         });
       }
     } catch (error) {
@@ -112,29 +85,16 @@ module.exports = {
           null
         ],
         (err, results) => {
-          if (err) {
-            console.log(err);
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Adding Operation" });
-          }
+          if (err) res.status(200).json({ ErrorMessage: "Error While Adding Operation" });
           if (results.affectedRows) {
             const AddTheUserAsMember = Members.Add_Member_Internal(
               OperationUser,
               OperationID
             );
-            if (AddTheUserAsMember) {
-              res.status(200).json({ data: true });
-            } else {
-              res
-                .status(200)
-                .json({ ErrorMessage: "Error While Adding Operation" });
-            }
-          } else {
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Adding Operation" });
+            if (AddTheUserAsMember) res.status(200).json({ data: true });
+            else res.status(200).json({ ErrorMessage: "Error While Adding Operation" });
           }
+          else res.status(200).json({ ErrorMessage: "Error While Adding Operation" });
         }
       );
     } catch (error) {
@@ -148,19 +108,9 @@ module.exports = {
       const sqlQuery = `SELECT o_image FROM operations WHERE o_id=?`;
 
       await pool.query(sqlQuery, [OperationID], (err, results) => {
-        if (err) {
-          console.log(err);
-          res
-            .status(200)
-            .json({ ErrorMessage: "Error While Getting Operation Image" });
-        }
-        if (results.length > 0) {
-          res.status(200).json({ data: results[0] });
-        } else {
-          res
-            .status(200)
-            .json({ ErrorMessage: "Error While Getting Operation Image" });
-        }
+        if (err) res.status(200).json({ ErrorMessage: "Error While Getting Operation Image" });
+        if (results.length > 0) res.status(200).json({ data: results[0] });
+        else res.status(200).json({ ErrorMessage: "Error While Getting Operation Image" });
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -173,32 +123,22 @@ module.exports = {
       const sqlQuery = `DELETE FROM operations WHERE o_id=?`;
 
       await pool.query(sqlQuery, [OperationID], (err, results) => {
-        if (err) {
-          console.log(err);
-          res
-            .status(200)
-            .json({ ErrorMessage: "Error While Removing Operation" });
-        }
+        if (err) res.status(200).json({ ErrorMessage: "Error While Removing Operation" });
         if (results.affectedRows) {
-          let operation_posts =
-            Posts.Remove_Posts_By_Operation_Internal(OperationID);
-          let operation_targets =
-            Targets.Remove_Targets_By_Operation_Internal(OperationID);
-          let operation_tasks =
-            Tasks.Remove_Tasks_By_Operation_Internal(OperationID);
-
-          if (operation_posts && operation_targets && operation_tasks) {
-            res.status(200).json({ data: true });
-          } else {
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Removing Operation" });
-          }
-        } else {
-          res
-            .status(200)
-            .json({ ErrorMessage: "Error While Removing Operation" });
+          const operation_posts = Posts.Remove_Posts_By_Operation_Internal(OperationID);
+          const operation_targets = Targets.Remove_Targets_By_Operation_Internal(OperationID);
+          const operation_tasks = Tasks.Remove_Tasks_By_Operation_Internal(OperationID);
+          const operation_members = Members.Remove_Member_By_Operation_Internal(OperationID)
+          // remove relations
+          if (
+            operation_posts &&
+            operation_targets &&
+            operation_tasks &&
+            operation_members
+            ) res.status(200).json({ data: true });
+          else res.status(200).json({ ErrorMessage: "Error While Removing Operation" });
         }
+        else res.status(200).json({ ErrorMessage: "Error While Removing Operation" });
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -210,23 +150,10 @@ module.exports = {
       const { OperationID, OperationName, OperationDescription } = req.body;
       const sqlQuery = `UPDATE operations SET o_name=?, o_description=? WHERE o_id=?`;
 
-      await pool.query(
-        sqlQuery,
-        [OperationName, OperationDescription, OperationID],
-        (err, results) => {
-          if (err) {
-            console.log(err);
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Updating Operation Info" });
-          }
-          if (results.affectedRows) {
-            res.status(200).json({ data: true });
-          } else {
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Updating Operation Info" });
-          }
+      await pool.query(sqlQuery, [OperationName, OperationDescription, OperationID], (err, results) => {
+          if (err) res.status(200).json({ ErrorMessage: "Error While Updating Operation Info" });
+          if (results.affectedRows) res.status(200).json({ data: true });
+          else res.status(200).json({ ErrorMessage: "Error While Updating Operation Info" });
         }
       );
     } catch (error) {
@@ -239,23 +166,10 @@ module.exports = {
       const { OperationID, OperationState } = req.body;
       const sqlQuery = `UPDATE operations SET o_state=? WHERE o_id=?`;
 
-      await pool.query(
-        sqlQuery,
-        [OperationState, OperationID],
-        (err, results) => {
-          if (err) {
-            console.log(err);
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Updating Operation State" });
-          }
-          if (results.affectedRows) {
-            res.status(200).json({ data: true });
-          } else {
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Updating Operation State" });
-          }
+      await pool.query(sqlQuery, [OperationState, OperationID], (err, results) => {
+          if (err) res.status(200).json({ ErrorMessage: "Error While Updating Operation State" });
+          if (results.affectedRows) res.status(200).json({ data: true });
+          else res.status(200).json({ ErrorMessage: "Error While Updating Operation State" });
         }
       );
     } catch (error) {
@@ -265,20 +179,12 @@ module.exports = {
 
   Remove_Operation_By_User_Internal: async (o_user) => {
     try {
-      const sqlQuery = `DELETE FROM operations WHERE o_user=?`;
+      let sqlQuery = `DELETE FROM operations WHERE o_user=?`;
 
       await pool.query(sqlQuery, [o_user], (err, results) => {
-        if (err) {
-          console.log(err);
-          res.status(200).json({
-            ErrorMessage: "Error While Removing Operation ( Internal )",
-          });
-        }
-        if (results.affectedRows) {
-          return true;
-        } else {
-          return false;
-        }
+        if (err) res.status(200).json({ ErrorMessage: "Error While Removing Operation ( Internal )" });
+        if (results.affectedRows) return true;
+        else return false;
       });
     } catch (error) {
       console.error(error.message);
@@ -291,19 +197,9 @@ module.exports = {
       const sqlQuery = `SELECT count(*) AS MembersCount FROM members WHERE m_operation=?`;
 
       await pool.query(sqlQuery, [OperationID], (err, results) => {
-        if (err) {
-          console.log(err);
-          res.status(200).json({
-            ErrorMessage: "Error While Getting Operation Members Count",
-          });
-        }
-        if (results.length > 0) {
-          res.status(200).json({ data: results });
-        } else {
-          res.status(200).json({
-            ErrorMessage: "Error While Getting Operation Members Count",
-          });
-        }
+        if (err) res.status(200).json({ ErrorMessage: "Error While Getting Operation Members Count" });
+        if (results.length > 0) res.status(200).json({ data: results });
+        else res.status(200).json({ ErrorMessage: "Error While Getting Operation Members Count" });
       });
     } catch (error) {
       console.error(error.message);
@@ -316,19 +212,9 @@ module.exports = {
       const sqlQuery = `SELECT count(*) AS PostsCount FROM posts WHERE p_operation=?`;
 
       await pool.query(sqlQuery, [OperationID], (err, results) => {
-        if (err) {
-          console.log(err);
-          res.status(200).json({
-            ErrorMessage: "Error While Getting Operation Posts Count",
-          });
-        }
-        if (results.length > 0) {
-          res.status(200).json({ data: results });
-        } else {
-          res.status(200).json({
-            ErrorMessage: "Error While Getting Operation Posts Count",
-          });
-        }
+        if (err) res.status(200).json({ ErrorMessage: "Error While Getting Operation Posts Count" });
+        if (results.length > 0) res.status(200).json({ data: results });
+        else res.status(200).json({ ErrorMessage: "Error While Getting Operation Posts Count" });
       });
     } catch (error) {
       console.error(error.message);
@@ -341,19 +227,9 @@ module.exports = {
       const sqlQuery = `SELECT count(*) AS TargetsCount FROM targets WHERE t_operation=?`;
 
       await pool.query(sqlQuery, [OperationID], (err, results) => {
-        if (err) {
-          console.log(err);
-          res.status(200).json({
-            ErrorMessage: "Error While Getting Operation Targets Count",
-          });
-        }
-        if (results.length > 0) {
-          res.status(200).json({ data: results });
-        } else {
-          res.status(200).json({
-            ErrorMessage: "Error While Getting Operation Targets Count",
-          });
-        }
+        if (err) res.status(200).json({ ErrorMessage: "Error While Getting Operation Targets Count" });
+        if (results.length > 0) res.status(200).json({ data: results });
+        else res.status(200).json({ ErrorMessage: "Error While Getting Operation Targets Count" });        
       });
     } catch (error) {
       console.error(error.message);
@@ -367,12 +243,7 @@ module.exports = {
       const sqlQuery = `SELECT * FROM operations WHERE o_user=? ORDER BY o_last_access DESC LIMIT 1`;
 
       await pool.query(sqlQuery, [UserID], (err, results) => {
-        if (err) {
-          console.log(err);
-          res.status(200).json({
-            ErrorMessage: "Error While Getting Last Accessed Operation",
-          });
-        }
+        if (err) res.status(200).json({ ErrorMessage: "Error While Getting Last Accessed Operation" });
         if (results) res.status(200).json({ data: results });
         else res.status(200).json({ErrorMessage: "Error While Getting Last Accessed Operation",});
       });
@@ -388,19 +259,9 @@ module.exports = {
       const date = new Date();
 
       await pool.query(sqlQuery, [date, OperationID], (err, results) => {
-        if (err) {
-          console.log(err);
-          res.status(200).json({
-            ErrorMessage: "Error While Setting Last Accessed Operation",
-          });
-        }
-        if (results.affectedRows) {
-          res.status(200).json({ data: true });
-        } else {
-          res.status(200).json({
-            ErrorMessage: "Error While Setting Last Accessed Operation",
-          });
-        }
+        if (err) res.status(200).json({ ErrorMessage: "Error While Setting Last Accessed Operation" });
+        if (results.affectedRows) res.status(200).json({ data: true });
+        else res.status(200).json({ ErrorMessage: "Error While Setting Last Accessed Operation" });
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -414,19 +275,9 @@ module.exports = {
       const sqlQuery = `SELECT count(*) AS OperationsCount FROM operations WHERE o_user=?`;
 
       await pool.query(sqlQuery, [UserID], (err, results) => {
-        if (err) {
-          console.log(err);
-          res.status(200).json({
-            ErrorMessage: "Error While Getting Operations Count",
-          });
-        }
-        if (results.length > 0) {
-          res.status(200).json({ data: results });
-        } else {
-          res.status(200).json({
-            ErrorMessage: "Error While Getting Operations Count",
-          });
-        }
+        if (err) res.status(200).json({ ErrorMessage: "Error While Getting Operations Count" });
+        if (results.length > 0) res.status(200).json({ data: results });
+        else res.status(200).json({ ErrorMessage: "Error While Getting Operations Count" });
       });
     } catch (error) {
       console.error(error.message);

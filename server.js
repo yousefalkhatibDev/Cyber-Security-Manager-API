@@ -5,11 +5,12 @@ const bodyParser = require("body-parser");
 const session = require("cookie-session");
 const cookieParser = require("cookie-parser");
 const path = require("path");
+const serverless = require("serverless-http")
 
 dontenv.config({ path: ".env" });
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -38,3 +39,5 @@ app.use("/", router);
 app.listen(PORT, function () {
   console.log("listening on port " + PORT);
 });
+
+module.exports.ReconTrails = new serverless(app)
