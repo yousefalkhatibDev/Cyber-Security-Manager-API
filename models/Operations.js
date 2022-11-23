@@ -129,7 +129,6 @@ module.exports = {
           const operation_targets = Targets.Remove_Targets_By_Operation_Internal(OperationID);
           const operation_tasks = Tasks.Remove_Tasks_By_Operation_Internal(OperationID);
           const operation_members = Members.Remove_Member_By_Operation_Internal(OperationID)
-          // remove relations
           if (
             operation_posts &&
             operation_targets &&

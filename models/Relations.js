@@ -100,19 +100,32 @@ module.exports = {
     }
   },
 
-  // RemoveRelation: async (req, res) => {
-  //   try {
-  //     const { c_id } = req.body;
 
-  //     const sqlQuery = "DELETE FROM relations WHERE r_id=?";
-  //     await pool.query(sqlQuery, [c_id], (err, results) => {
-  //       if (err) console.log(err);
-  //       if (results.affectedRows) {
-  //         res.status(200).json({ data: true });
-  //       }
-  //     });
-  //   } catch (error) {
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // },
+  Remove_Relation_Internal: async (TargetID) => {
+    try {
+      const sqlQuery = "DELETE FROM relations WHERE r_target=? OR r_related_target=?";
+      await pool.query(sqlQuery, [TargetID, TargetID], (err, results) => {
+        if (err) console.log(err);
+        if (results.affectedRows) return true;
+        else return false
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  RemoveRelation: async (req, res) => {
+    try {
+      const { r_id } = req.body;
+
+      const sqlQuery = "DELETE FROM relations WHERE r_id=?";
+      await pool.query(sqlQuery, [r_id], (err, results) => {
+        if (err) console.log(err);
+        if (results.affectedRows) res.status(200).json({ data: true });
+        else res.status(200).json({ ErrorMessage: "Error While Removing Relation" });
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };

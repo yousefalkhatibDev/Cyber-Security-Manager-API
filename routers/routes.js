@@ -209,6 +209,10 @@ router.post("/add_relation", (req, res) => {
   Relations.AddRelation(req, res);
 });
 
+router.post("/remove_relation", (req, res) => {
+  Relations.RemoveRelation(req, res);
+});
+
 // ------- Tasks -------
 
 router.post("/get_tasks", (req, res) => {

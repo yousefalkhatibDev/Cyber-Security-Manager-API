@@ -1,6 +1,7 @@
 const pool = require("../helper/database").pool;
 const CommonFunctions = require("../helper/CommonFunctions");
 const Notes = require("./Notes");
+const Relations = require("./Relations")
 const jwt = require("jsonwebtoken");
 
 module.exports = {
@@ -179,12 +180,23 @@ module.exports = {
 
   Remove_Targets_By_Operation_Internal: async (o_id) => {
     try {
-      const sqlQuery = "DELETE FROM targets WHERE t_operation=?";
+      let sqlQuery = "SELECT * FROM targets WHERE t_operation=?";
 
-      await pool.query(sqlQuery, [o_id], (err, results) => {
-        if (err) res.status(200).json({ ErrorMessage: "Error While Removing Target ( Internal )" });
-        if (results.affectedRows) return true;
-        else return false;
+      await pool.query(sqlQuery, [o_id], async (err, results) => {
+        if (err) res.status(200).json({ ErrorMessage: "Error While Removing Target ( Internal )" })
+        if (results.length > 0) {
+          results.map((target, i) => {
+            const RemoveAllRelations = Relations.Remove_Relation_Internal(target.t_id)
+            if (RemoveAllRelations !== true) res.status(200).json({ ErrorMessage: "Error While Removing Relations ( Internal )" });
+          });
+          sqlQuery = "DELETE FROM targets WHERE t_operation=?";
+          await pool.query(sqlQuery, [o_id], async (err, results) => {
+            if (err) res.status(200).json({ ErrorMessage: "Error While Removing Target ( Internal )" });
+            if (results.affectedRows) return true;
+            else return false;
+          })
+        }
+        
       });
     } catch (error) {
       console.error(error.message);

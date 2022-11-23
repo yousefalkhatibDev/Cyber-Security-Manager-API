@@ -161,7 +161,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/recontrails-api/production/1669224719062-2022-11-23T17:31:59.062Z/recontrails-api.zip"
+          "S3Key": "serverless/recontrails-api/production/1669230190227-2022-11-23T19:03:10.227Z/recontrails-api.zip"
         },
         "Handler": "server.ReconTrails",
         "Runtime": "nodejs12.x",
@@ -189,14 +189,14 @@
         "ReconTrailsLogGroup"
       ]
     },
-    "ReconTrailsLambdaVersiondZzhuF7QugMzO7pRTIhcAxDemPWh7Fmv0jlyC6cdk": {
+    "ReconTrailsLambdaVersiondGkxZBxdMz5QpDzHDfS7bz1Qzt5nuCzhg7M4H9hCV4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ReconTrailsLambdaFunction"
         },
-        "CodeSha256": "xfCs7YN8gTz3z/H1XU9l0uHhIJxf33stsXdq8K8AaEc="
+        "CodeSha256": "HE+hZFaO10IlZErCVMnQSPBNrkmjZ2P/fq8OXlbfJFs="
       }
     },
     "ApiGatewayRestApi": {
@@ -321,7 +321,7 @@
         "ReconTrailsLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1669224692295": {
+    "ApiGatewayDeployment1669230163849": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -384,7 +384,7 @@
     "ReconTrailsLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ReconTrailsLambdaVersiondZzhuF7QugMzO7pRTIhcAxDemPWh7Fmv0jlyC6cdk"
+        "Ref": "ReconTrailsLambdaVersiondGkxZBxdMz5QpDzHDfS7bz1Qzt5nuCzhg7M4H9hCV4"
       },
       "Export": {
         "Name": "sls-recontrails-api-production-ReconTrailsLambdaFunctionQualifiedArn"
