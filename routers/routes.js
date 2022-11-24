@@ -209,6 +209,10 @@ router.post("/add_relation", (req, res) => {
   Relations.AddRelation(req, res);
 });
 
+router.post("/remove_relation", (req, res) => {
+  Relations.RemoveRelation(req, res);
+});
+
 // ------- Tasks -------
 
 router.post("/get_tasks", (req, res) => {
@@ -243,6 +247,10 @@ router.post("/get_members", (req, res) => {
 
 router.post("/add_member", (req, res) => {
   Members.AddMember(req, res);
+});
+
+router.post("/remove_member", (req, res) => {
+  Members.RemoveMember(req, res);
 });
 
 module.exports = router;

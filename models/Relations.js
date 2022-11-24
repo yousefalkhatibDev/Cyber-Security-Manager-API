@@ -8,52 +8,25 @@ module.exports = {
       const { TargetID, SearchRelations } = req.body;
 
       if (SearchRelations) {
-        var searchTerm = "%".concat(SearchRelations.concat("%"));
-        let sqlQuery = `SELECT * FROM relations 
-        INNER JOIN targets ON targets.t_id=relations.r_related_target 
-        WHERE relations.r_target=? AND (targets.t_name
-        LIKE ? OR targets.t_description LIKE ? OR relations.r_description LIKE ?)
-        ORDER BY targets.t_create_date DESC`;
+        const searchTerm = "%".concat(SearchRelations.concat("%"));
+        const sqlQuery = `SELECT * FROM relations INNER JOIN targets ON targets.t_id=relations.r_related_target 
+                          WHERE relations.r_target=? AND (targets.t_name LIKE ? OR targets.t_description LIKE ? OR relations.r_description LIKE ?)
+                          ORDER BY targets.t_create_date DESC`;
 
-        await pool.query(
-          sqlQuery,
-          [TargetID, searchTerm, searchTerm, searchTerm],
-          (err, results) => {
-            if (err) {
-              console.log(err);
-              res
-                .status(200)
-                .json({ ErrorMessage: "Error While Getting Relations" });
-            }
-            if (results) {
-              res.status(200).json({ data: results });
-            } else {
-              res
-                .status(200)
-                .json({ ErrorMessage: "Error While Getting Relations" });
-            }
+        await pool.query(sqlQuery, [TargetID, searchTerm, searchTerm, searchTerm], (err, results) => {
+            if (err) res.status(200).json({ ErrorMessage: "Error While Getting Relations" });
+            if (results) res.status(200).json({ data: results });
+            else res.status(200).json({ ErrorMessage: "Error While Getting Relations" });
           }
         );
       } else {
-        let sqlQuery = `SELECT * FROM relations 
-            INNER JOIN targets ON targets.t_id=relations.r_related_target 
-            WHERE relations.r_target=? 
-            ORDER BY targets.t_create_date DESC`;
+        const sqlQuery = `SELECT * FROM relations INNER JOIN targets ON targets.t_id=relations.r_related_target 
+                          WHERE relations.r_target=? ORDER BY targets.t_create_date DESC`;
 
         await pool.query(sqlQuery, [TargetID], (err, results) => {
-          if (err) {
-            console.log(err);
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Getting Relations" });
-          }
-          if (results) {
-            res.status(200).json({ data: results });
-          } else {
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Getting Relations" });
-          }
+          if (err) res.status(200).json({ ErrorMessage: "Error While Getting Relations" });
+          if (results) res.status(200).json({ data: results });
+          else res.status(200).json({ ErrorMessage: "Error While Getting Relations" });
         });
       }
     } catch (error) {
@@ -66,56 +39,24 @@ module.exports = {
       const { TargetID, SearchRelatedByTargets } = req.body;
 
       if (SearchRelatedByTargets) {
-        var searchTerm = "%".concat(SearchRelatedByTargets.concat("%"));
-        let sqlQuery = `SELECT * FROM relations
-        INNER JOIN targets ON targets.t_id=relations.r_target
-        WHERE relations.r_related_target=? AND (targets.t_name
-        LIKE ? OR targets.t_description LIKE ? OR relations.r_description LIKE ?)
-        ORDER BY targets.t_create_date DESC;`;
+        const searchTerm = "%".concat(SearchRelatedByTargets.concat("%"));
+        const sqlQuery = `SELECT * FROM relations INNER JOIN targets ON targets.t_id=relations.r_target WHERE relations.r_related_target=?
+                          AND (targets.t_name LIKE ?OR targets.t_description LIKE ? OR relations.r_description LIKE ?)mORDER BY targets.t_create_date DESC;`;
 
-        await pool.query(
-          sqlQuery,
-          [TargetID, searchTerm, searchTerm, searchTerm],
-          (err, results) => {
-            if (err) {
-              console.log(err);
-              res
-                .status(200)
-                .json({
-                  ErrorMessage: "Error While Getting Related-By Targets",
-                });
-            }
-            if (results) {
-              res.status(200).json({ data: results });
-            } else {
-              res
-                .status(200)
-                .json({
-                  ErrorMessage: "Error While Getting Related-By Targets",
-                });
-            }
+        await pool.query(sqlQuery, [TargetID, searchTerm, searchTerm, searchTerm], (err, results) => {
+            if (err) res.status(200).json({ ErrorMessage: "Error While Getting Related-By Targets" }); 
+            if (results) res.status(200).json({ data: results });
+            else res.status(200).json({ ErrorMessage: "Error While Getting Related-By Targets" });
           }
         );
       } else {
-        let sqlQuery = `SELECT * FROM relations
-          INNER JOIN targets ON targets.t_id=relations.r_target
-          WHERE relations.r_related_target=?
-          ORDER BY targets.t_create_date DESC;`;
+        const sqlQuery = `SELECT * FROM relations INNER JOIN targets ON targets.t_id=relations.r_target
+                          WHERE relations.r_related_target=? ORDER BY targets.t_create_date DESC;`;
 
         await pool.query(sqlQuery, [TargetID], (err, results) => {
-          if (err) {
-            console.log(err);
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Getting Related-By Targets" });
-          }
-          if (results) {
-            res.status(200).json({ data: results });
-          } else {
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Getting Related-By Targets" });
-          }
+          if (err) res.status(200).json({ ErrorMessage: "Error While Getting Related-By Targets" });
+          if (results) res.status(200).json({ data: results });
+          else res.status(200).json({ ErrorMessage: "Error While Getting Related-By Targets" });
         });
       }
     } catch (error) {
@@ -135,8 +76,8 @@ module.exports = {
       const RelationID = CommonFunctions.Generate_Id();
       const RelationUser = jwt.verify(Token, process.env.SECRET).id;
       const date = new Date();
-
       const sqlQuery = "INSERT INTO relations VALUES (?,?,?,?,?,?,?,?)";
+      
       await pool.query(
         sqlQuery,
         [
@@ -150,39 +91,41 @@ module.exports = {
           date,
         ],
         (err, results) => {
-          if (err) {
-            console.log(err);
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Adding Relation" });
-          }
-          if (results.affectedRows) {
-            res.status(200).json({ data: true });
-          } else {
-            res
-              .status(200)
-              .json({ ErrorMessage: "Error While Adding Relation" });
-          }
-        }
-      );
+          if (err) res.status(200).json({ ErrorMessage: "Error While Adding Relation" });
+          if (results.affectedRows) res.status(200).json({ data: true });
+          else res.status(200).json({ ErrorMessage: "Error While Adding Relation" });
+        });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
 
-  // RemoveRelation: async (req, res) => {
-  //   try {
-  //     const { c_id } = req.body;
 
-  //     const sqlQuery = "DELETE FROM relations WHERE r_id=?";
-  //     await pool.query(sqlQuery, [c_id], (err, results) => {
-  //       if (err) console.log(err);
-  //       if (results.affectedRows) {
-  //         res.status(200).json({ data: true });
-  //       }
-  //     });
-  //   } catch (error) {
-  //     res.status(500).json({ error: error.message });
-  //   }
-  // },
+  Remove_Relation_Internal: async (TargetID) => {
+    try {
+      const sqlQuery = "DELETE FROM relations WHERE r_target=? OR r_related_target=?";
+      await pool.query(sqlQuery, [TargetID, TargetID], (err, results) => {
+        if (err) console.log(err);
+        if (results.affectedRows) return true;
+        else return false
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  RemoveRelation: async (req, res) => {
+    try {
+      const { r_id } = req.body;
+
+      const sqlQuery = "DELETE FROM relations WHERE r_id=?";
+      await pool.query(sqlQuery, [r_id], (err, results) => {
+        if (err) console.log(err);
+        if (results.affectedRows) res.status(200).json({ data: true });
+        else res.status(200).json({ ErrorMessage: "Error While Removing Relation" });
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };
